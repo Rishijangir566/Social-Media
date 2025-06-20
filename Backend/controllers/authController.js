@@ -45,7 +45,7 @@ export async function handleRegister(req, res) {
 
   try {
     await sendVerificationEmail(email, token);
-    res.json({ message: "Verification email sent!" });
+    res.status(200).json({ message: "Verification email sent!" });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Failed to send email" });
@@ -64,7 +64,9 @@ export async function verifyEmail(req, res) {
 
     await newData.save();
 
-    res.send("Email verified. User registered successfully!");
+    res
+      .status(201)
+      .json({ message: "Email verified. User registered successfully!" });
   } catch (err) {
     res.status(400).send("Invalid or expired link");
   }
@@ -75,7 +77,7 @@ export async function handleLogin(req, res) {
     const { email, password } = req.body;
 
     const user = await Register.findOne({ email });
-    console.log(user);
+    console.log("user:", user);
 
     if (!user || user.password !== String(password)) {
       return res.status(400).json({ message: "Invalid email or password" });

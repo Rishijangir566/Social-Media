@@ -5,7 +5,8 @@ import { BsFillEyeSlashFill } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa6";
 import { ImGithub } from "react-icons/im";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";    
+import instance from "./axiosConfig";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,14 +15,15 @@ function Login() {
     password: "",
   });
 
-  const handleChange = (e) => {
+  function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  }
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    console.log("Login Form Data:", formData);
-  };
+    const response = await instance.post("/user/login", formData);
+    console.log(response);
+  }
 
   return (
     <div

@@ -9,8 +9,11 @@ const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
+const FRONTEND_URL = process.env.FRONTEND_URL;
 const coreOptions = {
+  origin: FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 };
 app.use(cors(coreOptions));
 
