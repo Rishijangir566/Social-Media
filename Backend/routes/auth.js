@@ -1,0 +1,22 @@
+import express from "express";
+const router = express.Router();
+
+import {
+  updateProfile,
+  handleRegister,
+  handleLogin,
+  handleShareData,
+  verifyEmail,
+} from "../controllers/authController.js";
+
+import multer from "multer";
+import { protect } from "../middleware/authMiddleware.js";
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
+router.post("/register", handleRegister);
+router.get("/verify/:token", verifyEmail);
+router.post("/login", handleLogin);
+router.put("/profile", protect, upload.single("profilePic"), updateProfile);
+router.post("/shareData", protect, upload.single("postImage"), handleShareData);
+export default router;

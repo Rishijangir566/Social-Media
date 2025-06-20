@@ -1,0 +1,23 @@
+import express from "express";
+import cors from "cors";
+import "dotenv/config";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db.js";
+import authRouter from "./routes/auth.js";
+
+const app = express();
+
+app.use(cookieParser());
+app.use(express.json());
+const coreOptions = {
+  methods: ["GET", "POST", "PUT", "DELETE"],
+};
+app.use(cors(coreOptions));
+
+app.use("/user", authRouter);
+
+const PORT = process.env.PORT;
+connectDB();
+app.listen(PORT, () => {
+  console.log(`Your server is running at port:${PORT}`);
+});
