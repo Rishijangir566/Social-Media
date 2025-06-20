@@ -43,12 +43,16 @@ export async function handleRegister(req, res) {
     }
   );
 
+
   try {
     await sendVerificationEmail(email, token);
     res.status(200).json({ message: "Verification email sent!" });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Failed to send email" });
+    if (err.name === "TokenExpiredError") {
+      return res.status(400).send("Token has expired");
+    } else {
+      return res.status(400).send("Invalid token");
+    }
   }
 }
 export async function verifyEmail(req, res) {
@@ -63,6 +67,7 @@ export async function verifyEmail(req, res) {
     const newData = new Register({ email: Semail, userName, password });
 
     await newData.save();
+    console.log("Email verified. User registered successfully!");
 
     res
       .status(201)
