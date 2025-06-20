@@ -43,7 +43,6 @@ export async function handleRegister(req, res) {
     }
   );
 
-
   try {
     await sendVerificationEmail(email, token);
     res.status(200).json({ message: "Verification email sent!" });
@@ -69,11 +68,12 @@ export async function verifyEmail(req, res) {
     await newData.save();
     console.log("Email verified. User registered successfully!");
 
-    res
-      .status(201)
-      .json({ message: "Email verified. User registered successfully!" });
+    // return res
+    //   .status(201)
+    //   .json({ message: "Email verified. User registered successfully!" });
+    return res.redirect(`${process.env.FRONTEND_URL}/verify-success`);
   } catch (err) {
-    res.status(400).send("Invalid or expired link");
+    return res.redirect(`${process.env.FRONTEND_URL}/verify-fail`);
   }
 }
 
