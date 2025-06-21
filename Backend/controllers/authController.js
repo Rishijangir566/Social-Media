@@ -45,7 +45,7 @@ export async function handleRegister(req, res) {
 
   try {
     await sendVerificationEmail(email, token);
-    res.status(200).json({ message: "Verification email sent!" });
+    res.status(200).json({ message: `Verification email sent to ${email}` });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return res.status(400).send("Token has expired");
@@ -68,12 +68,11 @@ export async function verifyEmail(req, res) {
     await newData.save();
     console.log("Email verified. User registered successfully!");
 
-    // return res
-    //   .status(201)
-    //   .json({ message: "Email verified. User registered successfully!" });
-    return res.redirect(`${process.env.FRONTEND_URL}/verify-success`);
+    return res
+      .status(201)
+      .json({ message: "Email verified. User registered successfully!" });
   } catch (err) {
-    return res.redirect(`${process.env.FRONTEND_URL}/verify-fail`);
+    res.status(400).send("Invalid or expired link");
   }
 }
 
