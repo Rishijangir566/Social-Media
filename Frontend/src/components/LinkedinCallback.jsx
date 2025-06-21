@@ -19,7 +19,7 @@ const LinkedinCallback = () => {
     const authenticateWithLinkedIn = async () => {
       try {
         const res = await instance.post(
-          "/linkedin/callback",
+          "user/linkedin/callback",
           { code, redirectUri },
           { withCredentials: true }
         );

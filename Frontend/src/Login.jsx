@@ -84,19 +84,19 @@ function Login() {
         {/* Social Login Buttons */}
         <div className="flex justify-center gap-6 mb-6">
           <button
-            className="text-3xl hover:scale-110 transition"
+            className="text-3xl hover:scale-110 transition cursor-pointer"
             onClick={handleGoogleLogin}
           >
             <FcGoogle />
           </button>
           <button
-            className="text-3xl text-blue-600 hover:scale-110 transition"
+            className="text-3xl text-blue-600 hover:scale-110 transition cursor-pointer"
             onClick={handleLinkedInLogin}
           >
             <FaLinkedin />
           </button>
           <button
-            className="text-3xl text-white hover:scale-110 transition"
+            className="text-3xl text-white hover:scale-110 transition cursor-pointer"
             onClick={handleGitHubLogin}
           >
             <ImGithub />

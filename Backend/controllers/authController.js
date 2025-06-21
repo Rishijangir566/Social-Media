@@ -252,12 +252,10 @@ export async function githubAuthorization(req, res) {
     });
 
     if (!userResponse.ok) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Failed to fetch GitHub user details",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Failed to fetch GitHub user details",
+      });
     }
 
     const githubUser = await userResponse.json();
@@ -282,13 +280,48 @@ export async function githubAuthorization(req, res) {
       }
     );
     const events = await eventsResponse.json();
+    const { email } = emails[0];
+    const { login } = githubUser;
+    // console.log(emails[0].email);
 
-    res.status(200).json({
-      message: "GitHub Authentication Completed",
-      githubUser,
-      emails,
-      events,
-    });
+    const userExists = await Register.findOne({ email });
+
+    if (!userExists) {
+      const newData = new Register({ email, userName: login });
+      await newData.save();
+    }
+    const userDetail = await Register.findOne({ email });
+    console.log(userDetail);
+    const token = generateToken(userDetail._id);
+    const profileData = {
+      uniqueId: userDetail._id,
+      userName: userDetail.userName,
+      email: userDetail.email,
+      name: "",
+      phone: "",
+      gender: "",
+      dob: "",
+      Address: "",
+      state: "",
+      city: "",
+      bio: "",
+      profilePic: "",
+    };
+    const newProfile = new Profile(profileData);
+    const savedProfile = await newProfile.save();
+
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 2 * 60 * 60 * 1000,
+      })
+      .status(201)
+      .json({
+        message: "GitHub Authentication Completed,Profile created",
+        user: savedProfile,
+      });
   } catch (err) {
     console.error("GitHub OAuth Error:", err.message);
     res.status(500).json({ error: "OAuth failed", details: err.message });
@@ -296,6 +329,7 @@ export async function githubAuthorization(req, res) {
 }
 
 export async function googleAuthorization(req, res) {
+  console.log("first");
   try {
     const { code } = req.body;
 
@@ -334,11 +368,49 @@ export async function googleAuthorization(req, res) {
     );
 
     const userInfo = await userRes.json();
+    userInfo.name = userInfo.name.trim().toLowerCase().replace(/\s+/g, "-");
 
-    res.status(200).json({
-      message: "Google Authentication Successful",
-      user: userInfo,
-    });
+    const { email, name } = userInfo;
+
+    const userExists = await Register.findOne({ email });
+    if (!userExists) {
+      const newData = new Register({ email, userName: name });
+      await newData.save();
+    }
+
+    const userDetail = await Register.findOne({ email });
+    console.log(userDetail);
+    const token = generateToken(userDetail._id);
+
+    const profileData = {
+      uniqueId: userDetail._id,
+      userName: userDetail.userName,
+      email: userDetail.email,
+      name: "",
+      phone: "",
+      gender: "",
+      dob: "",
+      Address: "",
+      state: "",
+      city: "",
+      bio: "",
+      profilePic: "",
+    };
+    const newProfile = new Profile(profileData);
+    const savedProfile = await newProfile.save();
+
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 2 * 60 * 60 * 1000,
+      })
+      .status(201)
+      .json({
+        message: "Google Authentication Successful,Profile created",
+        user: savedProfile,
+      });
   } catch (err) {
     console.error("Google OAuth Error:", err.message);
     res.status(500).json({ error: "OAuth failed", details: err.message });

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate,  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig.js";
 
 const GoogleCallback = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(false);
   const navigate = useNavigate();
-//   const location = useLocation();
+  //   const location = useLocation();
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -18,14 +18,20 @@ const GoogleCallback = () => {
     const authenticateWithGoogle = async () => {
       try {
         const res = await instance.post(
-          "/google/callback",
+          "user/google/callback",
           { code, redirectUri },
           { withCredentials: true }
         );
 
-        console.log("Google response:", res.data);
-        setUser(res.data.user?.name || "Google User");
+        console.log("Google response:", res);
+        if (res.status === 201) {
+          setTimeout(() => {
+            setUser(true);
+            navigate("/profile");
+          }, 1000);
+        }
       } catch (err) {
+        setUser(false);
         console.error("Google login error:", err);
       }
     };
@@ -33,29 +39,14 @@ const GoogleCallback = () => {
     authenticateWithGoogle();
   }, []);
 
-  const handleLogout = () => {
-    setUser(null);
-    navigate("/");
-  };
-
   return (
     <>
-      {user ? (
-        <div>
-          <h2>Welcome, {user}!</h2>
-          <div className="relative inline-block rounded-md p-[2px] bg-gradient-to-r from-red-500 to-yellow-500">
-            <button
-              onClick={handleLogout}
-              className="text-white px-5 py-1 rounded-md bg-black w-full h-full"
-            >
-              Logout
-            </button>
-          </div>
+      {!user ? (
+        <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
+          <p>Just a moment, verifying your Google account...</p>
         </div>
       ) : (
-        <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
-          <p>Completing Google login...</p>
-        </div>
+        ""
       )}
     </>
   );
