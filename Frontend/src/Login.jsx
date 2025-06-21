@@ -8,7 +8,6 @@ import { ImGithub } from "react-icons/im";
 import { Link, useNavigate } from "react-router-dom";
 import instance from "./axiosConfig";
 
-
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -16,8 +15,6 @@ function Login() {
     email: "",
     password: "",
   });
-
-
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,14 +25,47 @@ function Login() {
     try {
       const response = await instance.post("/user/login", formData);
       if (response.status === 201) {
-        
         navigate("/profile");
       }
     } catch (error) {
       console.error(error);
-      
     }
   }
+
+  function handleGitHubLogin() {
+    const clientId = import.meta.env.VITE_GITHUB_CLIENT_ID;
+
+    const redirectUri = `${window.location.origin}/github-callback`;
+
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&scope=user`;
+    window.location.href = githubAuthUrl;
+  }
+
+  function handleGoogleLogin() {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const redirectUri = "http://localhost:5173/google/callback";
+    const scope =
+      "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
+    const responseType = "code";
+
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${encodeURIComponent(
+      scope
+    )}&access_type=offline`;
+
+    window.location.href = authUrl;
+  }
+  const handleLinkedInLogin = () => {
+    const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
+    const redirectUri = "http://localhost:5173/linkedin/callback";
+
+    const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
+      redirectUri
+    )}&scope=openid%20profile%20email`;
+
+    window.location.href = authUrl;
+  };
 
   return (
     <div
@@ -53,13 +83,22 @@ function Login() {
 
         {/* Social Login Buttons */}
         <div className="flex justify-center gap-6 mb-6">
-          <button className="text-3xl hover:scale-110 transition">
+          <button
+            className="text-3xl hover:scale-110 transition"
+            onClick={handleGoogleLogin}
+          >
             <FcGoogle />
           </button>
-          <button className="text-3xl text-blue-600 hover:scale-110 transition">
+          <button
+            className="text-3xl text-blue-600 hover:scale-110 transition"
+            onClick={handleLinkedInLogin}
+          >
             <FaLinkedin />
           </button>
-          <button className="text-3xl text-white hover:scale-110 transition">
+          <button
+            className="text-3xl text-white hover:scale-110 transition"
+            onClick={handleGitHubLogin}
+          >
             <ImGithub />
           </button>
         </div>

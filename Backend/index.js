@@ -16,8 +16,10 @@ const coreOptions = {
   origin: FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(coreOptions));
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", authRouter);
 app.use("/api/users", userRoutes);
