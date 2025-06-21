@@ -3,6 +3,7 @@ import Login from "./Login";
 import Register from "./Register";
 import Profile from "./Profile";
 import Layout from "./Layout";
+import UserProvider from "./context/UserContext";
 
 const router = createBrowserRouter([
   {
@@ -21,12 +22,17 @@ const router = createBrowserRouter([
         path: "/profile",
         element: <Profile />,
       },
-      
     ],
   },
 ]);
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
+    </>
+  );
 }
 
 export default App;

@@ -78,7 +78,6 @@ export async function handleLogin(req, res) {
     const { email, password } = req.body;
 
     const user = await Register.findOne({ email });
-    console.log("user:", user);
 
     if (!user || user.password !== String(password)) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -101,7 +100,6 @@ export async function handleLogin(req, res) {
       profilePic: "",
     };
 
-    console.log(profileData);
     const newProfile = new Profile(profileData);
     const savedProfile = await newProfile.save();
 
@@ -195,5 +193,21 @@ export async function handleShareData(req, res) {
   } catch (error) {
     console.error("Post uploaded error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+export async function getMe(req, res) {
+  try {
+    const id = req.user._id; // Already an ObjectId
+
+    const user = await Profile.findOne({ uniqueId: id }).select("-__v");
+    if (!user) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("getMe Error:", err.message);
+    res.status(500).json({ message: "Server error" });
   }
 }

@@ -8,6 +8,7 @@ import { ImGithub } from "react-icons/im";
 import { Link, useNavigate } from "react-router-dom";
 import instance from "./axiosConfig";
 
+
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -16,17 +17,24 @@ function Login() {
     password: "",
   });
 
+
+
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await instance.post("/user/login", formData);
-    if (response.status === 201) {
-      navigate("/profile");
+    try {
+      const response = await instance.post("/user/login", formData);
+      if (response.status === 201) {
+        
+        navigate("/profile");
+      }
+    } catch (error) {
+      console.error(error);
+      
     }
-    console.log(response);
   }
 
   return (

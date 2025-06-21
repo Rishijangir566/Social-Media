@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import instance from "./axiosConfig.js";
 import {
   User,
   Mail,
@@ -12,9 +13,41 @@ import {
 } from "lucide-react";
 
 function Profile() {
+  const [userDetail, setUserDetail] = useState();
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await instance.get("/api/users/me");
+        setUserDetail(res.data);
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (userDetail) {
+      setFormData({
+        name: userDetail.name || "",
+        userName: userDetail.userName || "",
+        email: userDetail.email || "",
+        phone: userDetail.phone || "",
+        bio: userDetail.bio || "",
+        dob: userDetail.dob || "",
+        gender: userDetail.gender || "",
+        city: userDetail.city || "",
+        state: userDetail.state || "",
+        address: userDetail.address || "",
+        image: null, // Skip pre-setting the image file
+      });
+    }
+  }, [userDetail]);
+
   const [formData, setFormData] = useState({
     name: "",
-    username: "",
+    userName: "",
     email: "",
     phone: "",
     bio: "",
@@ -120,10 +153,11 @@ function Profile() {
             {/* Username */}
             <Field
               icon={<User />}
-              name="username"
-              placeholder="Username"
-              value={formData.username}
+              name="userName"
+              placeholder="UserName"
+              value={formData.userName}
               onChange={handleChange}
+              disabled
             />
             {/* Email */}
             <Field
@@ -133,6 +167,7 @@ function Profile() {
               value={formData.email}
               type="email"
               onChange={handleChange}
+              disabled
             />
             {/* Phone */}
             <Field
@@ -232,7 +267,16 @@ function Profile() {
   );
 }
 
-const Field = ({ icon, name, placeholder, type = "text", value, onChange }) => (
+// Updated Field component to accept disabled and style it properly
+const Field = ({
+  icon,
+  name,
+  placeholder,
+  type = "text",
+  value,
+  onChange,
+  disabled = false,
+}) => (
   <div className="group relative">
     <div className="absolute left-3 top-3 w-5 h-5 text-white/60">{icon}</div>
     <input
@@ -241,7 +285,10 @@ const Field = ({ icon, name, placeholder, type = "text", value, onChange }) => (
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all duration-300 hover:bg-white/10"
+      disabled={disabled}
+      className={`w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all duration-300 hover:bg-white/10 ${
+        disabled ? "opacity-60 cursor-not-allowed" : ""
+      }`}
     />
   </div>
 );
