@@ -5,10 +5,11 @@ import { BsFillEyeSlashFill } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa6";
 import { ImGithub } from "react-icons/im";
-import { Link } from "react-router-dom";    
+import { Link, useNavigate } from "react-router-dom";
 import instance from "./axiosConfig";
 
 function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -22,6 +23,9 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     const response = await instance.post("/user/login", formData);
+    if (response.status === 201) {
+      navigate("/profile");
+    }
     console.log(response);
   }
 

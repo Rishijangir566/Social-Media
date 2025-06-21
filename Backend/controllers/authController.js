@@ -55,7 +55,6 @@ export async function handleRegister(req, res) {
   }
 }
 export async function verifyEmail(req, res) {
-  console.log("first");
   const { token } = req.params;
 
   try {
@@ -68,9 +67,7 @@ export async function verifyEmail(req, res) {
     await newData.save();
     console.log("Email verified. User registered successfully!");
 
-    return res
-      .status(201)
-      .json({ message: "Email verified. User registered successfully!" });
+    return res.send("Email verified. User registered successfully!");
   } catch (err) {
     res.status(400).send("Invalid or expired link");
   }
