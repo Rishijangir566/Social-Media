@@ -30,11 +30,14 @@ function uploadToCloudinary(buffer, folder) {
   });
 }
 export async function handleRegister(req, res) {
-  console.log(req.body);
   const { email, name, password } = req.body;
+
   const userExists = await Register.findOne({ email });
+
   if (userExists) {
-    return res.status(409).json({ message: "Email already in use" });
+    if (userExists.oauthProvider === "local") {
+      return res.status(409).json({ message: "Email already in use" });
+    }
   }
   const token = jwt.sign({ email, name, password }, process.env.JWT_SECRET, {
     expiresIn: "10m",
@@ -51,6 +54,7 @@ export async function handleRegister(req, res) {
     }
   }
 }
+
 export async function verifyEmail(req, res) {
   console.log("first");
   const { token } = req.params;
@@ -81,7 +85,7 @@ export async function handleLogin(req, res) {
   try {
     const { email, password } = req.body;
 
-    const user = await Register.findOne({ email });
+    const user = await Register.findOne({ email, oauthProvider: "local" });
 
     if (!user || user.password !== String(password)) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -89,24 +93,27 @@ export async function handleLogin(req, res) {
 
     const token = generateToken(user._id);
 
-    const profileData = {
-      uniqueId: user._id,
-      userName: "",
-      email: user.email,
-      name: user.name,
-      phone: "",
-      gender: "",
-      dob: "",
-      Address: "",
-      state: "",
-      city: "",
-      bio: "",
-      profilePic: "",
-    };
+    let userDetail = await Profile.findOne({ uniqueId: user._id });
 
-    const newProfile = new Profile(profileData);
-    const savedProfile = await newProfile.save();
-
+    if (!userDetail) {
+      userDetail = new Profile({
+        uniqueId: user._id,
+        userName: "",
+        email: user.email,
+        name: user.name,
+        phone: "",
+        gender: "",
+        dob: "",
+        Address: "",
+        state: "",
+        city: "",
+        bio: "",
+        profilePic: "",
+        oauthProvider: "local",
+      });
+      await userDetail.save();
+    }
+    console.log(userDetail);
     return res
       .cookie("token", token, {
         httpOnly: true,
@@ -117,7 +124,7 @@ export async function handleLogin(req, res) {
       .status(201)
       .json({
         message: "Login successfull,Profile created",
-        user: savedProfile,
+        user: userDetail,
       });
   } catch (err) {
     console.error("Login Error:", err.message);
@@ -219,7 +226,7 @@ export async function getMe(req, res) {
 }
 
 export async function githubAuthorization(req, res) {
-  console.log("first");
+  // console.log("first");
   try {
     const { code, redirectUri } = req.body;
 
@@ -321,6 +328,7 @@ export async function githubAuthorization(req, res) {
     console.log(userDetail);
 
     const token = generateToken(userDetail._id);
+
     let user = await Profile.findOne({ uniqueId: userDetail._id });
 
     if (!user) {
@@ -337,9 +345,11 @@ export async function githubAuthorization(req, res) {
         city: "",
         bio: "",
         profilePic: userDetail.profileUrl || "",
+        oauthProvider: "github",
       });
       await user.save();
     }
+    console.log(user);
 
     return res
       .cookie("token", token, {
@@ -360,7 +370,7 @@ export async function githubAuthorization(req, res) {
 }
 
 export async function googleAuthorization(req, res) {
-  console.log("first");
+  // console.log("first");
   try {
     const { code } = req.body;
 
@@ -400,34 +410,33 @@ export async function googleAuthorization(req, res) {
 
     const userInfo = await userRes.json();
 
-    const { email, name, id: googleId, picture, locale } = userInfo;
+    // console.log(userInfo);
+    const { email, name, id, given_name } = userInfo;
+    console.log(userInfo);
 
     // Step 1: Check if user exists
-    let userExists = await Register.findOne({ email });
+    let userExists = await Register.findOne({ oauthId: id });
 
     if (!userExists) {
       const Registeruser = new Register({
         email,
         userName: name.trim().toLowerCase().replace(/\s+/g, "-"),
         oauthProvider: "google",
-        oauthId: googleId,
-        profilePicture: picture,
-        locale,
-        password: null, // explicitly null
+        oauthId: id,
+        name: given_name,
       });
       await Registeruser.save();
     }
 
-    const userDetail = await Register.findOne({ email });
-    console.log(userDetail);
+    const userDetail = await Register.findOne({ oauthId: id });
 
     const token = generateToken(userDetail._id);
 
     // Optionally, check if profile already exists
-    const user = await Profile.findOne({ uniqueId: userDetail._id });
+    let user = await Profile.findOne({ uniqueId: userDetail._id });
 
     if (!user) {
-      const userData = new Profile({
+      user = new Profile({
         uniqueId: userDetail._id,
         userName: userDetail.userName,
         email: userDetail.email,
@@ -439,9 +448,10 @@ export async function googleAuthorization(req, res) {
         state: "",
         city: "",
         bio: "",
-        profilePic: userDetail.profilePicture || "",
+        profilePic: userDetail.profileUrl || "",
+        oauthProvider: "google",
       });
-      await userData.save();
+      await user.save();
     }
 
     return res
@@ -454,7 +464,7 @@ export async function googleAuthorization(req, res) {
       .status(201)
       .json({
         message: "Google Authentication Successful",
-        // user: userData,
+        user: user,
       });
   } catch (err) {
     console.error("Google OAuth Error:", err.message);

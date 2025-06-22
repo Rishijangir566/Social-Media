@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig.js";
 
 const GoogleCallback = () => {
+  
   const [user, setUser] = useState(false);
   const navigate = useNavigate();
-  //   const location = useLocation();
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -22,6 +22,7 @@ const GoogleCallback = () => {
           { code, redirectUri },
           { withCredentials: true }
         );
+        
 
         console.log("Google response:", res);
         if (res.status === 201) {

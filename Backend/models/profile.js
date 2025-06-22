@@ -17,6 +17,7 @@ const profileSchema = new mongoose.Schema({
   city: { type: String, default: "" },
   bio: { type: String, default: "" },
   profilePic: { type: String, default: "" },
+  oauthProvider: { type: String, default: null },
 });
 
 const Profile = mongoose.model("Profile", profileSchema);

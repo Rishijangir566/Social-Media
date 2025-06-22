@@ -44,6 +44,7 @@ function Login() {
   }
 
   function handleGoogleLogin() {
+    console.log("first")
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const redirectUri = "http://localhost:5173/google/callback";
     const scope =
