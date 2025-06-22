@@ -230,7 +230,7 @@ export async function getMe(req, res) {
 }
 
 export async function githubAuthorization(req, res) {
-  // console.log("first");
+  console.log("first");
   try {
     const { code, redirectUri } = req.body;
 
@@ -541,3 +541,25 @@ export async function linkedinAuthorization(req, res) {
       .json({ error: "LinkedIn OAuth failed", details: err.message });
   }
 }
+
+export const checkToken = (req, res) => {
+  console.log("first");
+  const { token } = req.cookies;
+  // console.log("Token is", token);
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
+    return res.status(200).json({
+      decoded,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      message: "Invalid token",
+    });
+  }
+};

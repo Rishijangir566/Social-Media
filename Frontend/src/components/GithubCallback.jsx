@@ -25,11 +25,14 @@ const GithubCallback = () => {
         console.log(res);
 
         if (res.status === 201) {
-          setTimeout(() => {
-            setUser(true);
-            navigate("/profile");
-          }, 1000);
-          setUser(true);
+          if (res.data?.user?.firstTimeSignIn === true) {
+            navigate("/homePage");
+          } else {
+            setTimeout(() => {
+              setUser(true);
+              navigate("/profile");
+            }, 1000);
+          }
         }
       } catch (err) {
         setUser(false);

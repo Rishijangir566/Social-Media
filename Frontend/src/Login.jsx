@@ -23,9 +23,16 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const response = await instance.post("/user/login", formData);
-      if (response.status === 201) {
-        navigate("/profile");
+      const res = await instance.post("/user/login", formData);
+      console.log(res);
+      if (res.status === 201) {
+        if (res.data?.user?.firstTimeSignIn === true) {
+          navigate("/homePage");
+        } else {
+          setTimeout(() => {
+            navigate("/profile");
+          }, 1000);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -44,7 +51,7 @@ function Login() {
   }
 
   function handleGoogleLogin() {
-    console.log("first")
+    console.log("first");
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const redirectUri = "http://localhost:5173/google/callback";
     const scope =

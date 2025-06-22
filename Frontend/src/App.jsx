@@ -8,6 +8,8 @@ import GithubCallback from "./components/GithubCallback";
 import GoogleCallback from "./components/GoogleCallback";
 import LinkedinCallback from "./components/LinkedinCallback";
 import HomePage from "./pages/HomePage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import AuthProvider from "./context/AuthContext";
 
 const router = createBrowserRouter([
   {
@@ -24,7 +26,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/homePage",
-        element: <HomePage />,
+
+        element: (
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/github-callback",
@@ -40,7 +47,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
@@ -48,9 +59,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <UserProvider>
-        <RouterProvider router={router} />
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <RouterProvider router={router} />
+        </UserProvider>
+      </AuthProvider>
     </>
   );
 }
