@@ -2,14 +2,15 @@ import { useState } from "react";
 import { FaUser, FaEnvelope, FaLock, FaEye } from "react-icons/fa";
 import { BsFillEyeSlashFill } from "react-icons/bs";
 import bgImage from "./assets/RegisterForm.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import instance from "./axiosConfig.js";
 
 function Register() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
-    userName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -27,12 +28,17 @@ function Register() {
       return;
     }
 
-    const { userName, email, password } = formData;
+    const { name, email, password } = formData;
+
     const response = await instance.post(
       "/user/register",
-      { userName, email, password },
+      { name, email, password },
       { withCredentials: true }
     );
+    if (response.status === 200) {
+      alert(response.data.message);
+      navigate("/");
+    }
     console.log(response);
   }
 
@@ -56,10 +62,10 @@ function Register() {
           <div className="relative">
             <FaUser className="absolute left-2 top-3 text-white/70" />
             <input
-              name="userName"
+              name="name"
               type="text"
-              placeholder="User Name:"
-              value={formData.userName}
+              placeholder="Enter your name:"
+              value={formData.name}
               onChange={handleChange}
               className="w-full pl-8 py-2 bg-transparent border-b border-white/70 focus:outline-none text-white"
             />

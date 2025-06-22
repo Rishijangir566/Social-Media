@@ -14,12 +14,13 @@ import {
 
 function Profile() {
   const [userDetail, setUserDetail] = useState();
+
   useEffect(() => {
     async function fetchUser() {
       try {
         const res = await instance.get("/api/users/me");
+        console.log(res);
         setUserDetail(res.data);
-        console.log(res.data);
       } catch (err) {
         console.error(err);
       }
@@ -40,7 +41,7 @@ function Profile() {
         city: userDetail.city || "",
         state: userDetail.state || "",
         address: userDetail.address || "",
-        image: null, // Skip pre-setting the image file
+        image: null,
       });
     }
   }, [userDetail]);
@@ -157,7 +158,7 @@ function Profile() {
               placeholder="UserName"
               value={formData.userName}
               onChange={handleChange}
-              disabled
+              disabled={userDetail?.userName ? true : false}
             />
             {/* Email */}
             <Field
@@ -229,19 +230,19 @@ function Profile() {
           {/* Bio and Address */}
           <div className="space-y-6 mb-8">
             <TextArea
-              icon={<FileText />}
-              name="bio"
-              placeholder="Tell us about yourself..."
-              rows="4"
-              value={formData.bio}
-              onChange={handleChange}
-            />
-            <TextArea
               icon={<MapPin />}
               name="address"
               placeholder="Full Address"
               rows="3"
               value={formData.address}
+              onChange={handleChange}
+            />
+            <TextArea
+              icon={<FileText />}
+              name="bio"
+              placeholder="Tell us about yourself..."
+              rows="4"
+              value={formData.bio}
               onChange={handleChange}
             />
           </div>

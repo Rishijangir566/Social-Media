@@ -22,14 +22,15 @@ const GithubCallback = () => {
           },
           { withCredentials: true }
         );
+        console.log(res);
 
         if (res.status === 201) {
           setTimeout(() => {
             setUser(true);
             navigate("/profile");
           }, 1000);
+          setUser(true);
         }
-        setUser(true);
       } catch (err) {
         setUser(false);
         console.error("GitHub login error:", err);
@@ -38,7 +39,6 @@ const GithubCallback = () => {
 
     handleGitHubCallback();
   }, [location.search]);
-
 
   return (
     <>

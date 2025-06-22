@@ -6,7 +6,7 @@ const profileSchema = new mongoose.Schema({
     ref: "Register",
     required: true,
   },
-  userName: { type: String, required: true },
+  userName: { type: String },
   email: { type: String, required: true },
   name: { type: String, default: "" },
   phone: { type: String, default: "" },

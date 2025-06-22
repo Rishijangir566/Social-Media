@@ -30,18 +30,15 @@ function uploadToCloudinary(buffer, folder) {
   });
 }
 export async function handleRegister(req, res) {
-  const { email, userName, password } = req.body;
+  console.log(req.body);
+  const { email, name, password } = req.body;
   const userExists = await Register.findOne({ email });
   if (userExists) {
     return res.status(409).json({ message: "Email already in use" });
   }
-  const token = jwt.sign(
-    { email, userName, password },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "10m",
-    }
-  );
+  const token = jwt.sign({ email, name, password }, process.env.JWT_SECRET, {
+    expiresIn: "10m",
+  });
 
   try {
     await sendVerificationEmail(email, token);
@@ -55,14 +52,21 @@ export async function handleRegister(req, res) {
   }
 }
 export async function verifyEmail(req, res) {
+  console.log("first");
   const { token } = req.params;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
 
-    const { userName, email, password } = decoded;
+    const { name, email, password } = decoded;
     const Semail = email.toLowerCase();
-    const newData = new Register({ email: Semail, userName, password });
+    const newData = new Register({
+      email: Semail,
+      name,
+      password,
+      oauthProvider: "local",
+    });
 
     await newData.save();
     console.log("Email verified. User registered successfully!");
@@ -87,9 +91,9 @@ export async function handleLogin(req, res) {
 
     const profileData = {
       uniqueId: user._id,
-      userName: user.userName,
+      userName: "",
       email: user.email,
-      name: "",
+      name: user.name,
       phone: "",
       gender: "",
       dob: "",
@@ -197,10 +201,12 @@ export async function handleShareData(req, res) {
 }
 
 export async function getMe(req, res) {
+  console.log("first");
   try {
     const id = req.user._id; // Already an ObjectId
 
     const user = await Profile.findOne({ uniqueId: id }).select("-__v");
+    console.log(user);
     if (!user) {
       return res.status(404).json({ message: "Profile not found" });
     }
@@ -213,6 +219,7 @@ export async function getMe(req, res) {
 }
 
 export async function githubAuthorization(req, res) {
+  console.log("first");
   try {
     const { code, redirectUri } = req.body;
 
@@ -280,35 +287,59 @@ export async function githubAuthorization(req, res) {
       }
     );
     const events = await eventsResponse.json();
-    const { email } = emails[0];
-    const { login } = githubUser;
-    // console.log(emails[0].email);
 
-    const userExists = await Register.findOne({ email });
+    const primaryEmailObj = emails.find(
+      (emailObj) => emailObj.primary && emailObj.verified
+    );
+    const email =
+      primaryEmailObj?.email ||
+      githubUser.email ||
+      `${login}@users.noreply.github.com`;
+
+    const { name, id, html_url, login } = githubUser;
+
+    // Step 1: Check if user exists
+
+    const userExists = await Register.findOne({
+      oauthId: id,
+    });
+    // console.log(userExists);
 
     if (!userExists) {
-      const newData = new Register({ email, userName: login });
+      const newData = new Register({
+        email,
+        name,
+        userName: login.trim().toLowerCase().replace(/\s+/g, "-"),
+        oauthProvider: "github",
+        oauthId: id,
+        profileUrl: html_url,
+      });
       await newData.save();
     }
-    const userDetail = await Register.findOne({ email });
+
+    const userDetail = await Register.findOne({ oauthId: id });
     console.log(userDetail);
+
     const token = generateToken(userDetail._id);
-    const profileData = {
-      uniqueId: userDetail._id,
-      userName: userDetail.userName,
-      email: userDetail.email,
-      name: "",
-      phone: "",
-      gender: "",
-      dob: "",
-      Address: "",
-      state: "",
-      city: "",
-      bio: "",
-      profilePic: "",
-    };
-    const newProfile = new Profile(profileData);
-    const savedProfile = await newProfile.save();
+    let user = await Profile.findOne({ uniqueId: userDetail._id });
+
+    if (!user) {
+      user = new Profile({
+        uniqueId: userDetail._id,
+        userName: userDetail.userName || "",
+        email: userDetail.email,
+        name: userDetail.name || "",
+        phone: "",
+        gender: "",
+        dob: "",
+        Address: "",
+        state: "",
+        city: "",
+        bio: "",
+        profilePic: userDetail.profileUrl || "",
+      });
+      await user.save();
+    }
 
     return res
       .cookie("token", token, {
@@ -319,8 +350,8 @@ export async function githubAuthorization(req, res) {
       })
       .status(201)
       .json({
-        message: "GitHub Authentication Completed,Profile created",
-        user: savedProfile,
+        message: "GitHub Authentication Completed",
+        user: user,
       });
   } catch (err) {
     console.error("GitHub OAuth Error:", err.message);
@@ -368,36 +399,50 @@ export async function googleAuthorization(req, res) {
     );
 
     const userInfo = await userRes.json();
-    userInfo.name = userInfo.name.trim().toLowerCase().replace(/\s+/g, "-");
 
-    const { email, name } = userInfo;
+    const { email, name, id: googleId, picture, locale } = userInfo;
 
-    const userExists = await Register.findOne({ email });
+    // Step 1: Check if user exists
+    let userExists = await Register.findOne({ email });
+
     if (!userExists) {
-      const newData = new Register({ email, userName: name });
-      await newData.save();
+      const Registeruser = new Register({
+        email,
+        userName: name.trim().toLowerCase().replace(/\s+/g, "-"),
+        oauthProvider: "google",
+        oauthId: googleId,
+        profilePicture: picture,
+        locale,
+        password: null, // explicitly null
+      });
+      await Registeruser.save();
     }
 
     const userDetail = await Register.findOne({ email });
     console.log(userDetail);
+
     const token = generateToken(userDetail._id);
 
-    const profileData = {
-      uniqueId: userDetail._id,
-      userName: userDetail.userName,
-      email: userDetail.email,
-      name: "",
-      phone: "",
-      gender: "",
-      dob: "",
-      Address: "",
-      state: "",
-      city: "",
-      bio: "",
-      profilePic: "",
-    };
-    const newProfile = new Profile(profileData);
-    const savedProfile = await newProfile.save();
+    // Optionally, check if profile already exists
+    const user = await Profile.findOne({ uniqueId: userDetail._id });
+
+    if (!user) {
+      const userData = new Profile({
+        uniqueId: userDetail._id,
+        userName: userDetail.userName,
+        email: userDetail.email,
+        name: userDetail.name || "",
+        phone: "",
+        gender: "",
+        dob: "",
+        Address: "",
+        state: "",
+        city: "",
+        bio: "",
+        profilePic: userDetail.profilePicture || "",
+      });
+      await userData.save();
+    }
 
     return res
       .cookie("token", token, {
@@ -408,8 +453,8 @@ export async function googleAuthorization(req, res) {
       })
       .status(201)
       .json({
-        message: "Google Authentication Successful,Profile created",
-        user: savedProfile,
+        message: "Google Authentication Successful",
+        // user: userData,
       });
   } catch (err) {
     console.error("Google OAuth Error:", err.message);
@@ -439,6 +484,7 @@ export async function linkedinAuthorization(req, res) {
 
     const tokenData = await tokenRes.json();
     const access_token = tokenData.access_token;
+
     // console.log("hello " , tokenData);
 
     if (!access_token) {
@@ -459,7 +505,9 @@ export async function linkedinAuthorization(req, res) {
     ]);
 
     const profile = await profileRes.json();
+    console.log(profile);
     const emailData = await emailRes.json();
+    console.log(emailData);
     const email = emailData.elements?.[0]?.["handle~"]?.emailAddress;
 
     return res.status(200).json({
