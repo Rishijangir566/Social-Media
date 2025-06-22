@@ -110,6 +110,7 @@ export async function handleLogin(req, res) {
         bio: "",
         profilePic: "",
         oauthProvider: "local",
+        firstTimeSignIn: false,
       });
       await userDetail.save();
     }
@@ -145,7 +146,8 @@ export async function updateProfile(req, res) {
   }
 
   try {
-    const { profilePic, ...profileFields } = req.body;
+    const { profilePic, firstTimeSignIn, ...profileFields } = req.body;
+    console.log(firstTimeSignIn);
 
     if (req.file) {
       const uploaded = await uploadToCloudinary(
@@ -157,7 +159,11 @@ export async function updateProfile(req, res) {
 
     const updatedProfile = await Profile.findOneAndUpdate(
       { uniqueId: userId },
-      profileFields
+      {
+        ...profileFields,
+        firstTimeSignIn: firstTimeSignIn,
+      },
+      { new: true }
     );
 
     res.status(200).json({ message: "Profile updated", user: updatedProfile });
@@ -170,8 +176,6 @@ export async function updateProfile(req, res) {
 export async function handleShareData(req, res) {
   try {
     const userId = req.user._id;
-    // console.log(userId);
-    // console.log(req.body);
 
     const MAX_SIZE = 2 * 1024 * 1024;
 
@@ -346,6 +350,7 @@ export async function githubAuthorization(req, res) {
         bio: "",
         profilePic: userDetail.profileUrl || "",
         oauthProvider: "github",
+        firstTimeSignIn: false,
       });
       await user.save();
     }
@@ -450,6 +455,7 @@ export async function googleAuthorization(req, res) {
         bio: "",
         profilePic: userDetail.profileUrl || "",
         oauthProvider: "google",
+        firstTimeSignIn: false,
       });
       await user.save();
     }

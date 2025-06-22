@@ -7,6 +7,7 @@ import UserProvider from "./context/UserContext";
 import GithubCallback from "./components/GithubCallback";
 import GoogleCallback from "./components/GoogleCallback";
 import LinkedinCallback from "./components/LinkedinCallback";
+import HomePage from "./pages/HomePage";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
+      },
+      {
+        path: "/homePage",
+        element: <HomePage />,
       },
       {
         path: "/github-callback",

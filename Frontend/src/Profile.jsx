@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import instance from "./axiosConfig.js";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   Mail,
@@ -13,7 +14,9 @@ import {
 } from "lucide-react";
 
 function Profile() {
+  const navigate = useNavigate();
   const [userDetail, setUserDetail] = useState();
+  const [firstTimeSignIn, setFirstTimeSignIn] = useState();
 
   useEffect(() => {
     async function fetchUser() {
@@ -27,6 +30,11 @@ function Profile() {
     }
     fetchUser();
   }, []);
+  useEffect(() => {
+    if (firstTimeSignIn === true) {
+      navigate("/homePage");
+    }
+  }, [firstTimeSignIn]);
 
   useEffect(() => {
     if (userDetail) {
@@ -73,10 +81,15 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log(formData);
-    setIsLoading(false);
+    const res = await instance.put("/user/profile", {
+      ...formData,
+      firstTimeSignIn: true,
+    });
+
+    console.log("Deepesh", res);
+    if (res.data.user.firstTimeSignIn === true) {
+      setFirstTimeSignIn(res.data.user.firstTimeSignIn);
+    }
   };
 
   return (

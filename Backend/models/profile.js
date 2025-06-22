@@ -18,6 +18,10 @@ const profileSchema = new mongoose.Schema({
   bio: { type: String, default: "" },
   profilePic: { type: String, default: "" },
   oauthProvider: { type: String, default: null },
+  firstTimeSignIn: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Profile = mongoose.model("Profile", profileSchema);

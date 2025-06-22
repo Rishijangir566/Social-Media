@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig.js";
 
 const GoogleCallback = () => {
-  
   const [user, setUser] = useState(false);
   const navigate = useNavigate();
 
@@ -22,7 +21,6 @@ const GoogleCallback = () => {
           { code, redirectUri },
           { withCredentials: true }
         );
-        
 
         console.log("Google response:", res);
         if (res.status === 201) {
@@ -43,7 +41,7 @@ const GoogleCallback = () => {
   return (
     <>
       {!user ? (
-        <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
+        <div className="min-h-screen flex justify-center items-center bg-blue-400 text-white">
           <p>Just a moment, verifying your Google account...</p>
         </div>
       ) : (
