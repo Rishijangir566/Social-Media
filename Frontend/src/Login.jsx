@@ -7,6 +7,7 @@ import { FaLinkedin } from "react-icons/fa6";
 import { ImGithub } from "react-icons/im";
 import { Link, useNavigate } from "react-router-dom";
 import instance from "./axiosConfig";
+import { useAuth } from "./context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Login() {
     email: "",
     password: "",
   });
+  const { setUser } = useAuth();
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,10 +29,12 @@ function Login() {
       console.log(res);
       if (res.status === 201) {
         if (res.data?.user?.firstTimeSignIn === true) {
-          navigate("/homePage");
+          setUser(true);
+          navigate("/mainLayout");
         } else {
           setTimeout(() => {
             navigate("/profile");
+            setUser(true);
           }, 1000);
         }
       }

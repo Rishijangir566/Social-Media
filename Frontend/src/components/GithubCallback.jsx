@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import instance from "../axiosConfig.js";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const GithubCallback = () => {
-  const [user, setUser] = useState(false);
+  const [user1, setUser1] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { setUser } = useAuth();
 
   useEffect(() => {
     const handleGitHubCallback = async () => {
@@ -26,16 +28,18 @@ const GithubCallback = () => {
 
         if (res.status === 201) {
           if (res.data?.user?.firstTimeSignIn === true) {
-            navigate("/homePage");
+            setUser1(true);
+            setUser(true);
+            navigate("/mainLayout");
           } else {
             setTimeout(() => {
-              setUser(true);
               navigate("/profile");
+               setUser(true);
             }, 1000);
           }
         }
       } catch (err) {
-        setUser(false);
+        setUser1(false);
         console.error("GitHub login error:", err);
       }
     };
@@ -45,7 +49,7 @@ const GithubCallback = () => {
 
   return (
     <>
-      {!user ? (
+      {!user1 ? (
         <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
           <p>Just a moment, verifying your Github account...</p>
         </div>

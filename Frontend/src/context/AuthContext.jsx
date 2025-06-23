@@ -9,9 +9,9 @@ function AuthProvider({ children }) {
 
   useEffect(() => {
     checkToken();
+    
   }, [user]);
 
-  console.log(user);
 
   const checkToken = async () => {
     try {
@@ -22,6 +22,7 @@ function AuthProvider({ children }) {
 
       if (res.status === 200) {
         setUser(true);
+        
       } else {
         setUser(false);
       }

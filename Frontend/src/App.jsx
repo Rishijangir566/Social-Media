@@ -7,9 +7,14 @@ import UserProvider from "./context/UserContext";
 import GithubCallback from "./components/GithubCallback";
 import GoogleCallback from "./components/GoogleCallback";
 import LinkedinCallback from "./components/LinkedinCallback";
-import HomePage from "./pages/HomePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthProvider from "./context/AuthContext";
+import Setting from "./pages/Setting";
+import Connection from "./pages/Connection";
+import Post from "./pages/Post";
+import Message from "./pages/Message";
+import Notifications from "./pages/Notifications";
+import MainLayout from "./pages/MainLaout";
 
 const router = createBrowserRouter([
   {
@@ -23,15 +28,6 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register />,
-      },
-      {
-        path: "/homePage",
-
-        element: (
-          <ProtectedRoute>
-            <HomePage />
-          </ProtectedRoute>
-        ),
       },
       {
         path: "/github-callback",
@@ -50,6 +46,55 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/mainLayout",
+        element: (
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/app/Message",
+        element: (
+          <ProtectedRoute>
+            <Message />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/app/post",
+        element: (
+          <ProtectedRoute>
+            <Post />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/app/connection",
+        element: (
+          <ProtectedRoute>
+            <Connection />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/notifiction",
+        element: (
+          <ProtectedRoute>
+            <Notifications />
+          </ProtectedRoute>
+        ),
+      },
+
+      {
+        path: "/app/setting",
+        element: (
+          <ProtectedRoute>
+            <Setting />
           </ProtectedRoute>
         ),
       },

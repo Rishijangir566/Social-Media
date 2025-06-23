@@ -60,7 +60,7 @@ function Profile() {
 
   useEffect(() => {
     if (firstTimeSignIn === true) {
-      navigate("/homePage");
+      navigate("/mainLayout");
     }
   }, [firstTimeSignIn, navigate]);
 
