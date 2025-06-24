@@ -39,13 +39,16 @@ export async function handleRegister(req, res) {
       return res.status(409).json({ message: "Email already in use" });
     }
   }
-  const token = jwt.sign({ email, name, password }, process.env.JWT_SECRET, {
-    expiresIn: "10m",
-  });
+  const Registration_Token = jwt.sign(
+    { email, name, password },
+    process.env.JWT_SECRET
+  );
 
   try {
-    await sendVerificationEmail(email, token);
-    res.status(200).json({ message: `Verification email sent to ${email}` });
+    await sendVerificationEmail(email, Registration_Token);
+    return res
+      .status(200)
+      .json({ message: `Verification email sent to ${email}` });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return res.status(400).send("Token has expired");
@@ -58,10 +61,10 @@ export async function handleRegister(req, res) {
 export async function verifyEmail(req, res) {
   console.log("first");
   const { token } = req.params;
-
+  console.log(token);
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log(decoded);
+    console.log(decoded);
 
     const { name, email, password } = decoded;
     const Semail = email.toLowerCase();
@@ -473,7 +476,7 @@ export async function googleAuthorization(req, res) {
         sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
-      .status(201)  
+      .status(201)
       .json({
         message: "Google Authentication Successful",
         user: user,

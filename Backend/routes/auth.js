@@ -12,8 +12,8 @@ import {
   linkedinAuthorization,
 } from "../controllers/authController.js";
 
-import multer from "multer";
 import { protect } from "../middleware/authMiddleware.js";
+import multer from "multer";
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 

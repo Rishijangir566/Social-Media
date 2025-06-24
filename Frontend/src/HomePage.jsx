@@ -41,7 +41,7 @@ const HomePage = () => {
               >
                 <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-10 w-[80px] h-[80px] rounded-full bg-gray-200 border-4 border-white overflow-hidden">
                   <img
-                    src={profile.profilepic || ProfileImg}
+                    src={profile.profilePic || ProfileImg}
                     alt="profile"
                     className="w-full h-full object-cover"
                   />
