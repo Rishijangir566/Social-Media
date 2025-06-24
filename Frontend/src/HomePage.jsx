@@ -4,24 +4,30 @@ import ProfileImg from "./assets/Icons.png";
 import bgImage from "./assets/RegisterForm.png";
 const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
-  //   const [loading, setLoading] = useState(true);
+  const [mainUserId, setMainUserId] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchProfiles();
+    fetchAllData();
   }, []);
-  const fetchProfiles = async () => {
-    try {
-      const res = await instance.get("/api/users/allprofiles");
 
-      console.log("Fetched data:", res.data);
-      setProfiles(res.data);
+  async function fetchAllData() {
+    try {
+      const userRes = await instance.get("/api/users/me");
+      const mainUser = userRes.data;
+      setMainUserId(mainUser.uniqueId);
+
+      const allProfilesRes = await instance.get("/api/users/allprofiles");
+      const filteredProfiles = allProfilesRes.data.filter(
+        (profile) => profile.uniqueId !== mainUser.uniqueId
+      );
+      setProfiles(filteredProfiles);
     } catch (err) {
-      setError("Failed to fetch profiles.", err);
+      setError("Failed to fetch profiles.");
       console.error(err);
     }
-  };
-  //   if (loading) return <div>Loading profiles...</div>;
+  }
+
   if (error) return <div>{error}</div>;
 
   return (

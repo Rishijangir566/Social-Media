@@ -222,7 +222,7 @@ export async function handleShareData(req, res) {
 export async function getMe(req, res) {
   console.log("first");
   try {
-    const id = req.user._id; // Already an ObjectId
+    const id = req.user._id; 
 
     const user = await Profile.findOne({ uniqueId: id }).select("-__v");
     console.log(user);

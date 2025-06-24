@@ -30,7 +30,7 @@ function Login() {
       if (res.status === 201) {
         if (res.data?.user?.firstTimeSignIn === true) {
           setUser(true);
-          navigate("/mainLayout");
+          navigate("/app/Home");
         } else {
           setTimeout(() => {
             navigate("/profile");

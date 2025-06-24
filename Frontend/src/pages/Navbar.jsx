@@ -87,7 +87,7 @@ const Navbar = () => {
                     : "text-white/80 hover:text-white hover:bg-white/10"
                 }`}
                 title="Home"
-                onClick={() => setActiveTab("Home")}
+                onClick={() => navigate("/app/Home")}
               >
                 <Home className="h-6 w-6" />
                 {activeTab === "Home" && (
