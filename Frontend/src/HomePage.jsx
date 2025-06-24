@@ -4,7 +4,6 @@ import ProfileImg from "./assets/Icons.png";
 import bgImage from "./assets/RegisterForm.png";
 const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
-  const [mainUserId, setMainUserId] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -15,7 +14,7 @@ const HomePage = () => {
     try {
       const userRes = await instance.get("/api/users/me");
       const mainUser = userRes.data;
-      setMainUserId(mainUser.uniqueId);
+      
 
       const allProfilesRes = await instance.get("/api/users/allprofiles");
       const filteredProfiles = allProfilesRes.data.filter(

@@ -78,7 +78,9 @@ export async function verifyEmail(req, res) {
     await newData.save();
     console.log("NewData:", newData);
 
-    console.log("Email verified. User registered successfully!");
+    console.log(
+      "Email verified. User registered successfully! Now you can login"
+    );
 
     return res.send("Email verified. User registered successfully!");
   } catch (err) {
@@ -126,7 +128,7 @@ export async function handleLogin(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "None",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -222,7 +224,7 @@ export async function handleShareData(req, res) {
 export async function getMe(req, res) {
   console.log("first");
   try {
-    const id = req.user._id; 
+    const id = req.user._id;
 
     const user = await Profile.findOne({ uniqueId: id }).select("-__v");
     console.log(user);
