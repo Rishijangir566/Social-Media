@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import Register from "../models/register.js";
 
 export const protect = async (req, res, next) => {
+  console.log(req.body);
+
   const { token } = req.cookies;
 
   if (!token) {
@@ -10,7 +12,6 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
 
     req.user = await Register.findById(decoded.id).select("-password");
 

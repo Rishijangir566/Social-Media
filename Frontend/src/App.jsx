@@ -184,7 +184,11 @@ const router = createBrowserRouter([
       },
       {
         path: "profile",
-        element: <Profile />,
+        element: (
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "message",

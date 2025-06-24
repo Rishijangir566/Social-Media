@@ -61,7 +61,7 @@ export async function verifyEmail(req, res) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
+    // console.log(decoded);
 
     const { name, email, password } = decoded;
     const Semail = email.toLowerCase();
@@ -71,13 +71,17 @@ export async function verifyEmail(req, res) {
       password,
       oauthProvider: "local",
     });
-
+    console.log("existingData:", newData);
     await newData.save();
+    console.log("NewData:", newData);
+
     console.log("Email verified. User registered successfully!");
 
     return res.send("Email verified. User registered successfully!");
   } catch (err) {
-    res.status(400).send("Invalid or expired link");
+    res
+      .status(400)
+      .json({ error: "Invalid or expired link", details: err.message });
   }
 }
 
@@ -324,7 +328,7 @@ export async function githubAuthorization(req, res) {
         userName: login.trim().toLowerCase().replace(/\s+/g, "-"),
         oauthProvider: "github",
         oauthId: id,
-        profileUrl: html_url,
+        url: html_url,
       });
       await newData.save();
     }
@@ -349,7 +353,8 @@ export async function githubAuthorization(req, res) {
         state: "",
         city: "",
         bio: "",
-        profilePic: userDetail.profileUrl || "",
+        profilePic: "",
+        url: userDetail.url,
         oauthProvider: "github",
         firstTimeSignIn: false,
       });
@@ -376,7 +381,7 @@ export async function githubAuthorization(req, res) {
 }
 
 export async function googleAuthorization(req, res) {
-  // console.log("first");
+  console.log("first");
   try {
     const { code } = req.body;
 
@@ -468,7 +473,7 @@ export async function googleAuthorization(req, res) {
         sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
-      .status(201)
+      .status(201)  
       .json({
         message: "Google Authentication Successful",
         user: user,
@@ -544,7 +549,7 @@ export async function linkedinAuthorization(req, res) {
 }
 
 export const checkToken = (req, res) => {
-  console.log("first");
+  // console.log("first");
   const { token } = req.cookies;
   // console.log("Token is", token);
 

@@ -17,6 +17,8 @@ const profileSchema = new mongoose.Schema({
   city: { type: String, default: "" },
   bio: { type: String, default: "" },
   profilePic: { type: String, default: "" },
+  url: { type: String, default: "" },
+
   oauthProvider: { type: String, default: null },
   firstTimeSignIn: {
     type: Boolean,
