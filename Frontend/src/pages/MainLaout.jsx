@@ -15,7 +15,7 @@ const MainLayout = () => {
         </div>
 
       
-        <div className="md:ml-[20%]  w-full md:w-[80%]  ">
+        <div className="md:ml-[21%]  w-full md:w-[80%]  ">
         
           <Outlet />
         </div>

@@ -35,7 +35,7 @@ function Profile() {
 
   useEffect(() => {
     if (firstTimeSignIn === true) {
-      navigate("/mainLayout");
+      navigate("/app/Home");
     }
   }, [firstTimeSignIn, navigate]);
 
@@ -96,7 +96,7 @@ function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className=" pt-20 bg-gradient-to-br w-[100%] from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements (fixed animation delay) */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-4 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
