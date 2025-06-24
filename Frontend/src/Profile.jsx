@@ -18,31 +18,6 @@ function Profile() {
   const [userDetail, setUserDetail] = useState();
   const [firstTimeSignIn, setFirstTimeSignIn] = useState();
 
-  // useEffect(() => {
-  //   async function fetchUser() {
-  //     try {
-  //       const res = await instance.get("/api/users/me");
-  //       console.log(res);
-
-  //        if (res.data.user.firstTimeSignIn === true) {
-  //     setFirstTimeSignIn(true);
-  //   }
-  //        if (firstTimeSignIn === true) {
-  //     navigate("/homePage");
-  //   }
-  //       setUserDetail(res.data);
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   }
-  //   fetchUser();
-  // }, []);
-  // useEffect(() => {
-  //   if (firstTimeSignIn === true) {
-  //     navigate("/homePage");
-  //   }
-  // }, [firstTimeSignIn, navigate]);
-
   useEffect(() => {
     async function fetchUser() {
       try {

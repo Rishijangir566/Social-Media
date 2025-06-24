@@ -165,6 +165,7 @@ export async function updateProfile(req, res) {
       },
       { new: true }
     );
+    console.log(updatedProfile);
 
     res.status(200).json({ message: "Profile updated", user: updatedProfile });
   } catch (error) {
@@ -563,3 +564,12 @@ export const checkToken = (req, res) => {
     });
   }
 };
+
+export async function findAllProfiles(req, res) {
+  try {
+    const users = await Profile.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users", error });
+  }
+}

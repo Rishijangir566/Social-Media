@@ -10,10 +10,9 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-   
+    console.log(decoded);
 
     req.user = await Register.findById(decoded.id).select("-password");
-   
 
     next();
   } catch (err) {
