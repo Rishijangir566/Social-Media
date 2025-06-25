@@ -137,8 +137,8 @@ export async function handleLogin(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        secure: "true",
+        secure: process.env.NODE_ENV === "true",
+        // secure: "production",
 
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
@@ -383,8 +383,8 @@ export async function githubAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        secure: "true",
+        secure: process.env.NODE_ENV === "true",
+        // secure: "production",
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
@@ -489,8 +489,8 @@ export async function googleAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === "production",
-        secure: "true",
+        secure: process.env.NODE_ENV === "true",
+        // secure: "production",
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
@@ -571,7 +571,7 @@ export async function linkedinAuthorization(req, res) {
 }
 
 export const checkToken = (req, res) => {
-  // console.log("first");
+  console.log("first");
   const { token } = req.cookies;
   console.log("Token is", token);
 
