@@ -35,14 +35,13 @@ export async function handleRegister(req, res) {
 
   const userExists = await Register.findOne({ email });
 
-  if (userExists) {
-    if (userExists.oauthProvider === "local") {
-      return res.status(409).json({ message: "Email already in use" });
-    }
+  if (userExists && userExists.oauthProvider === "local") {
+    return res.status(409).json({ message: "Email already in use" });
   }
   const Registration_Token = jwt.sign(
     { email, name, password },
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
+    { expiresIn: "10m" }
   );
 
   try {
@@ -53,8 +52,6 @@ export async function handleRegister(req, res) {
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       return res.status(400).send("Token has expired");
-    } else {
-      return res.status(400).send("Invalid token");
     }
   }
 }
