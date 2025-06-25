@@ -137,7 +137,9 @@ export async function handleLogin(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production",
+        secure: "true",
+
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
@@ -381,7 +383,8 @@ export async function githubAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production",
+        secure: "true",
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
@@ -486,7 +489,8 @@ export async function googleAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        // secure: process.env.NODE_ENV === "production",
+        secure: "true",
         sameSite: process.env.SAMESITE === "None",
         // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
