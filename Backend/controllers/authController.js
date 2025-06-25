@@ -136,7 +136,7 @@ export async function handleLogin(req, res) {
     }
     console.log(userDetail);
     return res
-      .cookie("token", token, {
+      .cookies("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
@@ -379,7 +379,7 @@ export async function githubAuthorization(req, res) {
     console.log(user);
 
     return res
-      .cookie("token", token, {
+      .cookies("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
@@ -483,7 +483,7 @@ export async function googleAuthorization(req, res) {
     }
 
     return res
-      .cookie("token", token, {
+      .cookies("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
@@ -567,7 +567,8 @@ export async function linkedinAuthorization(req, res) {
 export const checkToken = (req, res) => {
   // console.log("first");
   const { token } = req.cookies;
-  // console.log("Token is", token);
+  console.log("Token is", token);
+
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
