@@ -1,10 +1,9 @@
 import express from "express";
 import {
-  checkToken,
   findAllProfiles,
   getMe,
 } from "../controllers/authController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { checkToken, protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/me", protect, getMe);
