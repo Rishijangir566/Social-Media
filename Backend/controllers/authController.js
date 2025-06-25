@@ -60,30 +60,41 @@ export async function handleRegister(req, res) {
 
 export async function verifyEmail(req, res) {
   console.log("first");
+
   const { token } = req.params;
   console.log(token);
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log(decoded);
 
     const { name, email, password } = decoded;
     const Semail = email.toLowerCase();
+
+   
+    const userExists = await Register.findOne({
+      email: Semail,
+      oauthProvider: "local",
+    });
+
+    if (userExists) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
     const newData = new Register({
       email: Semail,
       name,
       password,
       oauthProvider: "local",
     });
-    console.log("existingData:", newData);
-    await newData.save();
-    console.log("NewData:", newData);
 
-    console.log(
-      "Email verified. User registered successfully! Now you can login"
-    );
+    console.log("Creating new user:", newData);
+    await newData.save();
+    console.log("New user saved:", newData);
 
     return res.send("Email verified. User registered successfully!");
   } catch (err) {
+    console.error("Error during verification:", err);
     res
       .status(400)
       .json({ error: "Invalid or expired link", details: err.message });
