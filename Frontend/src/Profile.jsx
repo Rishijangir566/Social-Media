@@ -114,12 +114,12 @@ function Profile() {
       alert("Please upload a profile image.");
       return;
     }
+    if (!formData.userName) {
+      alert("User Name is Required!");
+    }
     if (formData.userName.length < 5) {
       alert("Username must be at least 5 characters long.");
       return;
-    }
-    if (!formData.userName) {
-      alert("User Name is Required!");
     }
 
     const data = new FormData();
@@ -202,7 +202,7 @@ function Profile() {
                   userDetail?.userName ? "opacity-60 cursor-not-allowed" : ""
                 }`}
               />
-              {username.length > 2 && message ? (
+              {username.length > 5 && message ? (
                 <p
                   className={`text-sm mt-1 ${
                     available ? "text-green-500" : "text-red-500"
