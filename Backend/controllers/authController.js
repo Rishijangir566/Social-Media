@@ -139,7 +139,7 @@ export async function handleLogin(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "None",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -382,7 +382,7 @@ export async function githubAuthorization(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "None",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -486,7 +486,7 @@ export async function googleAuthorization(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "None",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
