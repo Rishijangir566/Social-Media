@@ -139,7 +139,7 @@ export async function handleLogin(req, res) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
-        maxAge: 10 * 60 * 1000,
+        maxAge: 2 * 60 * 60 * 1000,
       })
 
       .status(201)
@@ -383,7 +383,7 @@ export async function githubAuthorization(req, res) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
-        maxAge: 10 * 60 * 1000,
+        maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
       .json({
@@ -487,7 +487,7 @@ export async function googleAuthorization(req, res) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "None",
-        maxAge: 10 * 60 * 1000,
+        maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
       .json({
