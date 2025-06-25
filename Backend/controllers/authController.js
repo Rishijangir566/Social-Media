@@ -400,7 +400,7 @@ export async function githubAuthorization(req, res) {
 export async function googleAuthorization(req, res) {
   console.log("first");
   try {
-    const { code } = req.body;
+    const { code, redirectUri } = req.body;
 
     // Step 1: Exchange code for access_token
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
@@ -412,7 +412,7 @@ export async function googleAuthorization(req, res) {
         code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: "http://localhost:5173/google/callback",
+        redirect_uri: redirectUri,
         grant_type: "authorization_code",
       }),
     });
