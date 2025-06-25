@@ -24,6 +24,7 @@ const GithubCallback = () => {
           },
           { withCredentials: true }
         );
+        
         console.log(res);
 
         if (res.status === 201) {
@@ -49,14 +50,7 @@ const GithubCallback = () => {
 
   return (
     <>
-      {/* {!user1 ? (
-        <div className="min-h-screen flex justify-center items-center bg-gray-900 text-white">
-          <p>Just a moment, verifying your Github account...</p>
-        </div>
-      ) : (
-        ""
-      )} */}
-
+    
       {!user1 ? (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
           <div className="bg-gray-800/80 backdrop-blur-xl rounded-xl p-8 border border-gray-700/50 shadow-xl text-center text-white">

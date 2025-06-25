@@ -25,4 +25,5 @@ router.post("/google/callback", googleAuthorization);
 router.post("/linkedin/callback", linkedinAuthorization);
 router.put("/profile", protect, upload.single("profilePic"), updateProfile);
 router.post("/shareData", protect, upload.single("postImage"), handleShareData);
+
 export default router;

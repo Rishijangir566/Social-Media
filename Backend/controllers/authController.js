@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { sendVerificationEmail } from "../email.js";
+import ConnectionRequest from "../models/connection.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -572,3 +573,74 @@ export async function findAllProfiles(req, res) {
     res.status(500).json({ message: "Error fetching users", error });
   }
 }
+
+// controllers/connectionController.js
+export const sendConnectionRequest = async (req, res) => {
+  try {
+    const senderId = req.user.id;
+    console.log(req.user.id);
+
+    const { receiverId } = req.body;
+    console.log(receiverId);
+
+    if (senderId === receiverId) {
+      return res
+        .status(400)
+        .json({ message: "You can't connect with yourself." });
+    }
+
+    // Save to DB
+    await ConnectionRequest.create({
+      sender: senderId,
+      receiver: receiverId,
+      status: "pending",
+    });
+
+    res.status(201).json({ message: "Request sent." });
+  } catch (err) {
+    console.error("Send request error:", err);
+    res.status(500).json({ error: "Failed to send request" });
+  }
+};
+
+// controllers/connectionController.js
+
+export const handleConnectionRequest = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log(userId); // authenticated user
+    const { requestId, action } = req.body;
+    console.log(req.body); // action = 'accept' or 'reject'
+
+    if (!["accept", "reject"].includes(action)) {
+      return res.status(400).json({ message: "Invalid action" });
+    }
+
+    const request = await ConnectionRequest.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ message: "Request not found" });
+    }
+
+    if (request.receiver.toString() !== userId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    request.status = action === "accept" ? "accepted" : "rejected";
+    await request.save();
+
+    res.status(200).json({ message: ` Request ${request.status}` });
+  } catch (err) {
+    console.error("Handle request error:", err);
+    res.status(500).json({ error: "Failed to handle request" });
+  }
+};
+
+export const getPendingRequests = async (req, res) => {
+  const userId = req.user.id;
+  const requests = await ConnectionRequest.find({
+    receiver: userId,
+    status: "pending",
+  }).populate("sender", "userName email profilePic");
+
+  res.json(requests);
+};
