@@ -16,8 +16,9 @@ function Profile() {
   const [userDetail, setUserDetail] = useState(null);
   const [firstTimeSignIn, setFirstTimeSignIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState(null);
-  const [checkingUsername, setCheckingUsername] = useState(false);
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
+  const [available, setAvailable] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -64,29 +65,27 @@ function Profile() {
     }
   }, [userDetail]);
 
-  useEffect(() => {
-    if (formData.userName.trim().length > 2 && !userDetail?.userName) {
-      const delay = setTimeout(() => {
-        checkUsernameAvailability(formData.userName);
-      }, 500);
-      return () => clearTimeout(delay);
-    } else {
-      setIsUsernameAvailable(null);
+  const checkUsername = async () => {
+    if (!username.trim()) {
+      setMessage("");
+      setAvailable(null);
+      return;
     }
-  }, [formData.userName]);
 
-  const checkUsernameAvailability = async (username) => {
     try {
-      setCheckingUsername(true);
       const res = await instance.get(
-        `/check-username?username=${username.trim().toLowerCase()}`
+        `/api/users/check-username?username=${username}`
       );
-      setIsUsernameAvailable(res.data.available);
-    } catch (err) {
-      console.error("Username check failed:", err);
-      setIsUsernameAvailable(null);
-    } finally {
-      setCheckingUsername(false);
+      if (res.data.available) {
+        setAvailable(true);
+        setMessage("Username is available");
+      } else {
+        setAvailable(false);
+        setMessage("Username is already taken");
+      }
+    } catch {
+      setAvailable(false);
+      setMessage("Error checking username");
     }
   };
 
@@ -102,20 +101,25 @@ function Profile() {
       setFormData({ ...formData, [name]: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
+      if (name === "userName") {
+        setUsername(value);
+      }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.profilePic) {
+    if (!formData.profilePic && !userDetail?.profilePic) {
       alert("Please upload a profile image.");
       return;
     }
-
-    if (!userDetail?.userName && isUsernameAvailable === false) {
-      alert("Username is already taken. Please choose another one.");
+    if (formData.userName.length < 5) {
+      alert("Username must be at least 5 characters long.");
       return;
+    }
+    if (!formData.userName) {
+      alert("User Name is Required!");
     }
 
     const data = new FormData();
@@ -167,18 +171,10 @@ function Profile() {
               name="profilePic"
               accept="image/*"
               onChange={handleChange}
-              required
+              required={!userDetail?.profilePic}
               className="block w-full text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700"
             />
           </div>
-
-          {/* {formData.profilePic && (
-            <img
-              src={formData.profilePic}
-              alt="Preview"
-              className="w-32 h-32 object-cover rounded-full mx-auto mb-4"
-            />
-          )} */}
 
           <Field
             icon={<User />}
@@ -192,41 +188,30 @@ function Profile() {
           <div className="mb-4">
             <div className="relative">
               <User className="absolute left-3 top-3 w-5 h-5 text-white/60" />
-              <input
+              <Field
                 name="userName"
                 required
                 type="text"
                 placeholder="Username"
                 value={formData.userName}
-                maxLength={20}
+                maxLength={15}
                 onChange={handleChange}
+                onBlur={checkUsername}
                 disabled={userDetail?.userName}
-                className={`w-full bg-white/5 border ${
-                  isUsernameAvailable === false
-                    ? "border-red-500"
-                    : "border-white/20"
-                } rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all duration-300 hover:bg-white/10 ${
+                className={`w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all duration-300 hover:bg-white/10 ${
                   userDetail?.userName ? "opacity-60 cursor-not-allowed" : ""
                 }`}
               />
+              {username.length > 2 && message ? (
+                <p
+                  className={`text-sm mt-1 ${
+                    available ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {message}
+                </p>
+              ) : null}
             </div>
-            {!userDetail?.userName && (
-              <div className="text-sm text-white mt-1 min-h-[1.25rem]">
-                {checkingUsername && (
-                  <span className="text-yellow-400">Checking username...</span>
-                )}
-                {!checkingUsername && isUsernameAvailable === false && (
-                  <span className="text-red-500">
-                    ❌ Username already taken
-                  </span>
-                )}
-                {!checkingUsername && isUsernameAvailable === true && (
-                  <span className="text-green-400">
-                    ✅ Username is available
-                  </span>
-                )}
-              </div>
-            )}
           </div>
 
           <Field
@@ -266,10 +251,18 @@ function Profile() {
               onChange={handleChange}
               className="w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-purple-400 focus:bg-white/10 hover:bg-white/10"
             >
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="" className="text-black">
+                Select Gender
+              </option>
+              <option value="male" className="text-black">
+                Male
+              </option>
+              <option value="female" className="text-black">
+                Female
+              </option>
+              <option value="other" className="text-black">
+                Other
+              </option>
             </select>
           </div>
 
@@ -330,6 +323,7 @@ const Field = ({
   placeholder,
   type = "text",
   value,
+  onBlur,
   onChange,
   disabled = false,
 }) => (
@@ -340,6 +334,7 @@ const Field = ({
       type={type}
       placeholder={placeholder}
       value={value}
+      onBlur={onBlur}
       onChange={onChange}
       disabled={disabled}
       className={`w-full bg-white/5 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/60 focus:outline-none focus:border-purple-400 focus:bg-white/10 transition-all duration-300 hover:bg-white/10 ${

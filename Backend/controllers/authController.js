@@ -175,6 +175,7 @@ export async function updateProfile(req, res) {
         req.file.buffer,
         "profile_pics"
       );
+      console.log(uploaded);
       profileFields.profilePic = uploaded.secure_url;
     }
 
@@ -329,7 +330,7 @@ export async function githubAuthorization(req, res) {
       githubUser.email ||
       `${login}@users.noreply.github.com`;
 
-    const { name, id, html_url, login } = githubUser;
+    const { name, id, html_url } = githubUser;
 
     // Step 1: Check if user exists
 
@@ -342,7 +343,6 @@ export async function githubAuthorization(req, res) {
       const newData = new Register({
         email,
         name,
-        userName: login.trim().toLowerCase().replace(/\s+/g, "-"),
         oauthProvider: "github",
         oauthId: id,
         url: html_url,
@@ -439,7 +439,7 @@ export async function googleAuthorization(req, res) {
     const userInfo = await userRes.json();
 
     // console.log(userInfo);
-    const { email, name, id, given_name } = userInfo;
+    const { email, id, given_name } = userInfo;
     console.log(userInfo);
 
     // Step 1: Check if user exists
@@ -448,7 +448,6 @@ export async function googleAuthorization(req, res) {
     if (!userExists) {
       const Registeruser = new Register({
         email,
-        userName: name.trim().toLowerCase().replace(/\s+/g, "-"),
         oauthProvider: "google",
         oauthId: id,
         name: given_name,
@@ -644,3 +643,30 @@ export const getPendingRequests = async (req, res) => {
 
   res.json(requests);
 };
+
+export async function findUserName(req, res) {
+  const { username } = req.query;
+
+  if (!username || username.trim() === "") {
+    return res
+      .status(400)
+      .json({ available: false, message: "Username is required" });
+  }
+
+  const user = await Profile.findOne({ userName: username.trim() });
+
+  if (user) {
+    return res.json({ available: false, message: "Username is already taken" });
+  }
+
+  res.json({ available: true });
+}
+
+export function handleLogout(req, res) {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
+}

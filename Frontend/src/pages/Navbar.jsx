@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import instance from "../axiosConfig.js";
 import {
   Search,
   Bell,
@@ -11,6 +12,7 @@ import {
   Menu,
   X,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -19,6 +21,21 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState(3);
   const [activeTab, setActiveTab] = useState("Home");
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const res = await instance.get("/api/users/logout");
+
+      if (res.status == 200) {
+        navigate("/");
+      } else {
+        alert("Failed to log out.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout failed");
+    }
+  };
 
   return (
     <>
@@ -164,6 +181,14 @@ const Navbar = () => {
                 onClick={() => navigate("/app/profile")}
               >
                 <User className="h-5 w-5" />
+              </button>
+
+              <button
+                className="flex items-center ml-8 gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 text-white font-medium hover:from-red-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-5 w-5" />
+                <span>Logout</span>
               </button>
             </div>
 
