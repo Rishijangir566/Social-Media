@@ -137,13 +137,11 @@ export async function handleLogin(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "true",
-        // secure: "production",
-
-        sameSite: process.env.SAMESITE === "None",
-        // sameSite: "strict",
-        maxAge: 2 * 60 * 60 * 1000,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        maxAge: 10 * 60 * 1000,
       })
+
       .status(201)
       .json({
         message: "Login successfull,Profile created",
@@ -383,11 +381,9 @@ export async function githubAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "true",
-        // secure: "production",
-        sameSite: process.env.SAMESITE === "None",
-        // sameSite: "strict",
-        maxAge: 2 * 60 * 60 * 1000,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        maxAge: 10 * 60 * 1000,
       })
       .status(201)
       .json({
@@ -489,11 +485,9 @@ export async function googleAuthorization(req, res) {
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "true",
-        // secure: "production",
-        sameSite: process.env.SAMESITE === "None",
-        // sameSite: "strict",
-        maxAge: 2 * 60 * 60 * 1000,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        maxAge: 10 * 60 * 1000,
       })
       .status(201)
       .json({
@@ -569,8 +563,6 @@ export async function linkedinAuthorization(req, res) {
       .json({ error: "LinkedIn OAuth failed", details: err.message });
   }
 }
-
-
 
 export async function findAllProfiles(req, res) {
   try {
