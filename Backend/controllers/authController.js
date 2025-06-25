@@ -71,7 +71,6 @@ export async function verifyEmail(req, res) {
     const { name, email, password } = decoded;
     const Semail = email.toLowerCase();
 
-   
     const userExists = await Register.findOne({
       email: Semail,
       oauthProvider: "local",
@@ -136,10 +135,11 @@ export async function handleLogin(req, res) {
     }
     console.log(userDetail);
     return res
-      .cookies("token", token, {
+      .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.SAMESITE === "None",
+        // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -379,10 +379,11 @@ export async function githubAuthorization(req, res) {
     console.log(user);
 
     return res
-      .cookies("token", token, {
+      .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.SAMESITE === "None",
+        // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -483,10 +484,11 @@ export async function googleAuthorization(req, res) {
     }
 
     return res
-      .cookies("token", token, {
+      .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: process.env.SAMESITE === "None",
+        // sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
       .status(201)
@@ -568,7 +570,6 @@ export const checkToken = (req, res) => {
   // console.log("first");
   const { token } = req.cookies;
   console.log("Token is", token);
-
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
