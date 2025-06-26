@@ -133,6 +133,7 @@ import Message from "./pages/Message";
 import Notifications from "./pages/Notifications";
 import MainLayout from "./pages/MainLaout";
 import HomePage from "./HomePage";
+import DisplayPosts from "./displayPosts";
 
 const router = createBrowserRouter([
   {
@@ -193,6 +194,10 @@ const router = createBrowserRouter([
       {
         path: "message",
         element: <Message />,
+      },
+        {
+        path: "DisplayPosts",
+        element: <DisplayPosts />,
       },
       {
         path: "post",

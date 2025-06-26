@@ -197,6 +197,7 @@ export async function updateProfile(req, res) {
 
 export async function handleShareData(req, res) {
   try {
+    // console.log(req.body);
     const userId = req.user._id;
 
     const MAX_SIZE = 2 * 1024 * 1024;
@@ -206,7 +207,7 @@ export async function handleShareData(req, res) {
         .status(400)
         .json({ message: "Profile picture must be under 2MB" });
     }
-    const { content, hashtags } = req.body;
+    const { content, hashtags, userName, profilepic } = req.body;
 
     let postPicUrl = null;
     if (req.file) {
@@ -219,6 +220,8 @@ export async function handleShareData(req, res) {
       content,
       hashtags,
       postImage: postPicUrl,
+      userName: userName,
+      profilePic: profilepic,
     };
     console.log(postData);
     const newPost = new userPost(postData);
@@ -234,12 +237,11 @@ export async function handleShareData(req, res) {
 }
 
 export async function getMe(req, res) {
-  console.log("first");
   try {
     const id = req.user._id;
 
     const user = await Profile.findOne({ uniqueId: id }).select("-__v");
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(404).json({ message: "Profile not found" });
     }
@@ -566,6 +568,16 @@ export async function linkedinAuthorization(req, res) {
 export async function findAllProfiles(req, res) {
   try {
     const users = await Profile.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users", error });
+  }
+}
+export async function findAllPosts(req, res) {
+  
+  try {
+    const users = await userPost.find().select("-password");
+    
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });

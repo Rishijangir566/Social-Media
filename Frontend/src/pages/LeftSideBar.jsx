@@ -3,16 +3,17 @@ import {
   MessageCircle,
   FileText,
   Users,
-  Bell,
+  Heart,
   User,
   Settings,
 } from "lucide-react";
+import { GoFileMedia } from "react-icons/go";
 
 const LeftSideBar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-80 h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 hidden md:block text-white p-6 shadow-2xl sticky top-0 z-50 backdrop-blur-xl bg-opacity-80 relative overflow-hidden">
+    <div className="w-80 h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 hidden md:block text-white p-6 shadow-2xl sticky top-0 z-50 backdrop-blur-xl bg-opacity-80  overflow-hidden">
       {/* Animated background dots */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rounded-full animate-pulse"></div>
@@ -81,6 +82,24 @@ const LeftSideBar = () => {
             />
             <span>Post</span>
           </Link>
+          <Link
+            to="/app/DisplayPosts"
+            className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+              location.pathname === "/app/setting"
+                ? "bg-white/20 text-white font-semibold shadow-lg"
+                : "text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-md"
+            }`}
+          >
+            {location.pathname === "/app/setting" && (
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
+            )}
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <GoFileMedia
+              size={20}
+              className="group-hover:rotate-12 transition-transform duration-300"
+            />
+            <span>Media</span>
+          </Link>
 
           <Link
             to="/app/connection"
@@ -113,10 +132,7 @@ const LeftSideBar = () => {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Bell
-              size={20}
-              className="group-hover:rotate-12 transition-transform duration-300"
-            />
+            <Heart className="h-6 w-6" />
             <span>Notification</span>
           </Link>
 
@@ -137,25 +153,6 @@ const LeftSideBar = () => {
               className="group-hover:rotate-12 transition-transform duration-300"
             />
             <span>Profile</span>
-          </Link>
-
-          <Link
-            to="/app/setting"
-            className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-              location.pathname === "/app/setting"
-                ? "bg-white/20 text-white font-semibold shadow-lg"
-                : "text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-md"
-            }`}
-          >
-            {location.pathname === "/app/setting" && (
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
-            )}
-            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Settings
-              size={20}
-              className="group-hover:rotate-12 transition-transform duration-300"
-            />
-            <span>Setting</span>
           </Link>
         </nav>
       </div>

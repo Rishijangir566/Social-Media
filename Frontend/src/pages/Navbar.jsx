@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig.js";
 import { LuLogOut } from "react-icons/lu";
+import { Link } from "react-router-dom";
 
 import {
   Search,
@@ -20,8 +21,7 @@ import {
 const Navbar = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [notifications, setNotifications] = useState(3);
-  const [activeTab, setActiveTab] = useState("Home");
+  const [activeTab, setActiveTab] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -116,6 +116,7 @@ const Navbar = () => {
               </button>
 
               {/* Create */}
+             <Link  to="/app/post">
               <button
                 className={`relative p-3 rounded-xl transition-all duration-300 group ${
                   activeTab === "Create"
@@ -130,9 +131,10 @@ const Navbar = () => {
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
                 )}
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </button></Link>
 
               {/* Activity */}
+             <Link to="/app/notification">
               <button
                 className={`relative p-3 rounded-xl transition-all duration-300 group ${
                   activeTab === "Activity"
@@ -147,9 +149,10 @@ const Navbar = () => {
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
                 )}
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </button></Link>
 
               {/* Messages */}
+           <Link to="/app/message">
               <button
                 className={`relative p-3 rounded-xl transition-all duration-300 group ${
                   activeTab === "Messages"
@@ -164,18 +167,7 @@ const Navbar = () => {
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
                 )}
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
-
-              {/* Notifications */}
-              <button className="relative p-3 rounded-xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 group">
-                <Bell className="h-6 w-6" />
-                {notifications > 0 && (
-                  <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce shadow-lg">
-                    {notifications > 9 ? "9+" : notifications}
-                  </div>
-                )}
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </button></Link>
 
               {/* Profile */}
               <button
@@ -185,14 +177,15 @@ const Navbar = () => {
                 <User className="h-5 w-5" />
               </button>
 
-            <button 
+              <button
                 className="relative p-3 rounded-xl text-white/80 ml-4 hover:text-white hover:bg-red-500/20 transition-all duration-300 group border border-white/20 hover:border-red-500/40"
                 title="Logout"
                 onClick={handleLogout}
               >
                 <LuLogOut className="h-6 w-6" />
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1  bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+                       
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -293,17 +286,6 @@ const Navbar = () => {
                 <span className="font-medium">Messages</span>
               </button>
 
-              {/* Notifications */}
-              <button className="w-full flex items-center space-x-4 px-4 py-3 rounded-xl text-left text-white/80 hover:bg-white/10 hover:text-white transition-all duration-300">
-                <Bell className="h-5 w-5" />
-                <span className="font-medium">Notifications</span>
-                {notifications > 0 && (
-                  <span className="ml-auto bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full px-2 py-1 shadow-lg">
-                    {notifications}
-                  </span>
-                )}
-              </button>
-
               {/* Profile */}
               <button className="w-full flex items-center space-x-4 px-4 py-3 rounded-xl text-left text-white/80 hover:bg-white/10 hover:text-white transition-all duration-300">
                 <User className="h-5 w-5" />
@@ -377,15 +359,14 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* Notifications */}
-        <button 
-                className="relative p-3 rounded-xl text-white/80 hover:text-white hover:bg-red-500/20 transition-all duration-300 group border border-white/20 hover:border-red-500/40"
-                title="Logout"
-                onClick={handleLogout}
-              >
-                <LuLogOut className="h-6 w-6" />
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+          <button
+            className="relative p-3 rounded-xl text-white/80 hover:text-white hover:bg-red-500/20 transition-all duration-300 group border border-white/20 hover:border-red-500/40"
+            title="Logout"
+            onClick={handleLogout}
+          >
+            <LuLogOut className="h-6 w-6" />
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </button>
         </div>
       </div>
     </>

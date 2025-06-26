@@ -19,6 +19,8 @@ const userPostSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    userName: { type: String },
+    profilePic: { type: String },
   },
   {
     timestamps: true,
