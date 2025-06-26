@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "../axiosConfig.js";
+import { LuLogOut } from "react-icons/lu";
+
 import {
   Search,
   Bell,
@@ -183,13 +185,14 @@ const Navbar = () => {
                 <User className="h-5 w-5" />
               </button>
 
-              <button
-                className="flex items-center ml-8 gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 text-white font-medium hover:from-red-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+            <button 
+                className="relative p-3 rounded-xl text-white/80 ml-4 hover:text-white hover:bg-red-500/20 transition-all duration-300 group border border-white/20 hover:border-red-500/40"
+                title="Logout"
                 onClick={handleLogout}
               >
-                <LogOut className="h-5 w-5" />
-                <span>Logout</span>
-              </button>
+                <LuLogOut className="h-6 w-6" />
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1  bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -375,14 +378,14 @@ const Navbar = () => {
           </button>
 
           {/* Notifications */}
-          <button className="relative p-3 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all duration-300">
-            <Bell className="h-6 w-6" />
-            {notifications > 0 && (
-              <div className="absolute -top-1 -right-1 bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse shadow-lg">
-                {notifications > 9 ? "9+" : notifications}
-              </div>
-            )}
-          </button>
+        <button 
+                className="relative p-3 rounded-xl text-white/80 hover:text-white hover:bg-red-500/20 transition-all duration-300 group border border-white/20 hover:border-red-500/40"
+                title="Logout"
+                onClick={handleLogout}
+              >
+                <LuLogOut className="h-6 w-6" />
+                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
         </div>
       </div>
     </>

@@ -131,7 +131,7 @@ const HomePage = () => {
             </div>
 
             <div className="absolute bottom-4 w-full flex justify-center">
-              <button className="text-2xl text-blue-500 p-5 rounded-2xl">
+              <button className="text-[15px] border text-blue-500 py-1.5  px-5 rounded-2xl ">
                 Connect
               </button>
             </div>
