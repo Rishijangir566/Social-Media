@@ -23,7 +23,7 @@ const DisplayPosts = () => {
   }
 
   return (
-    <div className="max-w-6xl mt-25 mx-auto px-4 py-6">
+    <div className="max-w-6xl mt-25 w-[100%] mx-auto px-4 py-6">
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       {/* Grid layout: 1 column on mobile, 2 on medium+ screens */}

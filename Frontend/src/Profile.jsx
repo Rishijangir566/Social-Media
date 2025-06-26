@@ -166,7 +166,7 @@ function Profile() {
   };
 
   return (
-    <div className="pt-20 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center min-h-screen p-4 relative">
+    <div className="pt-20 w-[100%] bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center min-h-screen p-4 relative">
       <div className="relative z-10 w-full max-w-4xl">
         <form
           onSubmit={handleSubmit}

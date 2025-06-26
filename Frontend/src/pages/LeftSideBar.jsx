@@ -13,7 +13,7 @@ const LeftSideBar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-80 h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 hidden md:block text-white p-6 shadow-2xl sticky top-0 z-50 backdrop-blur-xl bg-opacity-80  overflow-hidden">
+    <div className="w-[100%] h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-600 hidden md:block text-white p-6 shadow-2xl sticky top-0 z-50 backdrop-blur-xl bg-opacity-80  overflow-hidden">
       {/* Animated background dots */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rounded-full animate-pulse"></div>

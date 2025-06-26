@@ -9,13 +9,13 @@ const MainLayout = () => {
       <Navbar />
       <div className="flex">
      
-        <div className=" fixed top-[64px] left-0 ">
+        <div className=" fixed top-[64px] w-[20%] left-0 ">
        
           <LeftSideBar />
         </div>
 
       
-        <div className="md:ml-[21%]  w-full md:w-[80%]  ">
+        <div className="md:ml-[20%]  w-full md:w-[80%]  ">
         
           <Outlet />
         </div>

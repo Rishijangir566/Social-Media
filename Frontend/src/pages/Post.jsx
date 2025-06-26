@@ -61,7 +61,8 @@ const Post = () => {
 
   return (
     <>
-      {userDetail?.profilePic && (
+      <div className="w-[100%]">
+        {userDetail?.profilePic && (
         <img
           src={userDetail.profilePic}
           alt="Preview"
@@ -111,6 +112,7 @@ const Post = () => {
           Post
         </button>
       </form>
+      </div>
     </>
   );
 };

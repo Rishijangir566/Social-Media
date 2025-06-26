@@ -29,7 +29,7 @@ const HomePage = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="p-6 ml-8 mt-15">
+    <div className="p-6 w-[100%] ml-8 mt-15">
       <h1 className="text-2xl font-bold mb-4">All Profiles</h1>
 
       <ul className="space-y-4 flex flex-wrap gap-4">
