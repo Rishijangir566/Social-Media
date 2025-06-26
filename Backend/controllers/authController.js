@@ -99,8 +99,10 @@ export async function verifyEmail(req, res) {
 }
 
 export async function handleLogin(req, res) {
+  console.log("first");
   try {
     const { email, password } = req.body;
+    console.log(req.body);
 
     const user = await Register.findOne({ email, oauthProvider: "local" });
 
