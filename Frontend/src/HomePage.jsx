@@ -5,7 +5,7 @@ import bgImage from "./assets/RegisterForm.png";
 
 const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
-  const [requests, setRequests] = useState([]);
+  // const [requests, setRequests] = useState([]);
   const [error, setError] = useState("");
   // const [requestedIds, setRequestedIds] = useState([]);
 
@@ -24,7 +24,7 @@ const HomePage = () => {
       );
       setProfiles(filteredProfiles);
 
-      // const pendingRes = await instance.get("/api/users/connection/pending"); 
+      // const pendingRes = await instance.get("/api/users/connection/pending");
       // setRequests(pendingRes.data);
     } catch (err) {
       setError("Failed to fetch profiles or requests.");
@@ -131,16 +131,8 @@ const HomePage = () => {
             </div>
 
             <div className="absolute bottom-4 w-full flex justify-center">
-              <button
-                disabled={requestedIds.includes(profile.uniqueId)}
-                className={`border rounded-full px-6 py-1 ${
-                  requestedIds.includes(profile._id)
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "border-blue-500 text-blue-500 hover:bg-blue-50"
-                }`}
-                // onClick={() => sendRequest(profile.uniqueId)}
-              >
-                {requestedIds.includes(profile.uniqueId) ? "Requested" : "Connect"}
+              <button className="text-2xl text-blue-500 p-5 rounded-2xl">
+                Connect
               </button>
             </div>
           </div>
