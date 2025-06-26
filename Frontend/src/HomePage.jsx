@@ -7,7 +7,7 @@ const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
   const [requests, setRequests] = useState([]);
   const [error, setError] = useState("");
-  const [requestedIds, setRequestedIds] = useState([]);
+  // const [requestedIds, setRequestedIds] = useState([]);
 
   useEffect(() => {
     fetchAllData();
@@ -24,44 +24,44 @@ const HomePage = () => {
       );
       setProfiles(filteredProfiles);
 
-      const pendingRes = await instance.get("/api/users/connection/pending"); 
-      setRequests(pendingRes.data);
+      // const pendingRes = await instance.get("/api/users/connection/pending"); 
+      // setRequests(pendingRes.data);
     } catch (err) {
       setError("Failed to fetch profiles or requests.");
       console.error(err);
     }
   }
 
-  async function sendRequest(receiverId) {
-    console.log("sendRequest")
-    try {
-      await instance.post("/api/users/connection/send-request", {
-        receiverId,
-      });
-      setRequestedIds((prev) => [...prev, receiverId]);
-      alert("Connection request sent!");
-    } catch (err) {
-      console.error("Failed to send request:", err);
-      alert("Failed to send request.");
-    }
-  }
+  // async function sendRequest(receiverId) {
+  //   console.log("sendRequest")
+  //   try {
+  //     await instance.post("/api/users/connection/send-request", {
+  //       receiverId,
+  //     });
+  //     setRequestedIds((prev) => [...prev, receiverId]);
+  //     alert("Connection request sent!");
+  //   } catch (err) {
+  //     console.error("Failed to send request:", err);
+  //     alert("Failed to send request.");
+  //   }
+  // }
 
-  async function respondToRequest(requestId, action) {
-    console.log("respondToRequest")
-    try {
-      const res = await instance.post("/api/users/connection/handle-request", {
-        requestId,
-        action,
-      });
-      alert(res.data.message);
-      // Refresh requests list
-      const updated = await instance.get("/api/users/connection/pending");
-      setRequests(updated.data);
-    } catch (err) {
-      console.error("Failed to respond to request:", err);
-      alert("Error handling request");
-    }
-  }
+  // async function respondToRequest(requestId, action) {
+  //   console.log("respondToRequest")
+  //   try {
+  //     const res = await instance.post("/api/users/connection/handle-request", {
+  //       requestId,
+  //       action,
+  //     });
+  //     alert(res.data.message);
+  //     // Refresh requests list
+  //     const updated = await instance.get("/api/users/connection/pending");
+  //     setRequests(updated.data);
+  //   } catch (err) {
+  //     console.error("Failed to respond to request:", err);
+  //     alert("Error handling request");
+  //   }
+  // }
 
   if (error) return <div>{error}</div>;
 
@@ -69,7 +69,7 @@ const HomePage = () => {
     <div className="p-6 ml-8 mt-15">
       <h1 className="text-2xl font-bold mb-4">All Profiles</h1>
 
-      {/* Pending Requests */}
+      {/* Pending Requests
       {requests.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-2">Pending Requests</h2>
@@ -85,13 +85,13 @@ const HomePage = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => respondToRequest(req._id, "accept")}
+                    // onClick={() => respondToRequest(req._id, "accept")}
                     className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
                   >
                     Accept
                   </button>
                   <button
-                    onClick={() => respondToRequest(req._id, "reject")}
+                    // onClick={() => respondToRequest(req._id, "reject")}
                     className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
                   >
                     Reject
@@ -101,7 +101,7 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* All Profiles */}
       <ul className="space-y-4 flex flex-wrap gap-4">
@@ -138,7 +138,7 @@ const HomePage = () => {
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                     : "border-blue-500 text-blue-500 hover:bg-blue-50"
                 }`}
-                onClick={() => sendRequest(profile.uniqueId)}
+                // onClick={() => sendRequest(profile.uniqueId)}
               >
                 {requestedIds.includes(profile.uniqueId) ? "Requested" : "Connect"}
               </button>
