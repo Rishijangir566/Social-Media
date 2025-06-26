@@ -83,7 +83,7 @@ const LeftSideBar = () => {
             <span>Post</span>
           </Link>
           <Link
-            to="/app/DisplayPosts"
+            to="/app/displayPosts"
             className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
               location.pathname === "/app/setting"
                 ? "bg-white/20 text-white font-semibold shadow-lg"

@@ -196,7 +196,7 @@ const router = createBrowserRouter([
         element: <Message />,
       },
         {
-        path: "DisplayPosts",
+        path: "displayPosts",
         element: <DisplayPosts />,
       },
       {
