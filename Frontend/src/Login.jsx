@@ -27,8 +27,10 @@ function Login() {
     try {
       const res = await instance.post("/user/login", formData);
       console.log(res);
+
       if (res.status === 201) {
         if (res.data?.user?.firstTimeSignIn === true) {
+          
           setUser(true);
           navigate("/app/Home");
         } else {

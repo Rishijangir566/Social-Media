@@ -1,27 +1,20 @@
-// models/ConnectionRequest.js
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const connectionRequestSchema = new mongoose.Schema({
-  sender: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "profile",
-    required: true,
-  },
-  receiver: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "profile",
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "accepted", "rejected"],
-    default: "pending",
-  },
-  createdAt: { type: Date, default: Date.now },
-});
+const connection = new Schema({
+    sender: {
+        type: mongoose.Schema.ObjectId,
+        ref: "user"
+    },
+    receiver: {
+        type: mongoose.Schema.ObjectId,
+        ref: "user"
+    },
+    status: {
+        type: String,
+        enum:["accept","pending","reject"]
+    }
+}, { timestamps: true })
 
-const ConnectionRequest = mongoose.model(
-  "ConnectionRequest",
-  connectionRequestSchema
-);
-export default ConnectionRequest;
+
+const friendRequest = mongoose.model("friendRequest", connection)
+export default friendRequest;

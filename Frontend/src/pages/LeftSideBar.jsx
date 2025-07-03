@@ -4,6 +4,7 @@ import {
   FileText,
   Users,
   Heart,
+   PlusSquare,
   User,
   Settings,
 } from "lucide-react";
@@ -76,10 +77,10 @@ const LeftSideBar = () => {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <FileText
-              size={20}
-              className="group-hover:rotate-12 transition-transform duration-300"
-            />
+        <PlusSquare className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300"   size={20}
+           />
+            
+        
             <span>Post</span>
           </Link>
           <Link
@@ -98,7 +99,7 @@ const LeftSideBar = () => {
               size={20}
               className="group-hover:rotate-12 transition-transform duration-300"
             />
-            <span>Media</span>
+            <span>Feed</span>
           </Link>
 
           <Link
@@ -132,7 +133,7 @@ const LeftSideBar = () => {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Heart className="h-6 w-6" />
+            <Heart className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
             <span>Notification</span>
           </Link>
 

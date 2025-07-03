@@ -4,8 +4,8 @@ import instance from "../axiosConfig.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const GoogleCallback = () => {
-  const [user1, setUser1] = useState(false);
   const navigate = useNavigate();
+  const [user1, setUser1] = useState(false);
   const { setUser } = useAuth();
 
   useEffect(() => {

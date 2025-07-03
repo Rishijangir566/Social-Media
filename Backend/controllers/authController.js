@@ -1,12 +1,15 @@
 import Register from "../models/register.js";
 import Profile from "../models/profile.js";
 import userPost from "../models/post.js";
+import user from "../models/register.js";
+import friendRequest from "../models/connection.js";
+import axios from "axios";
 
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { sendVerificationEmail } from "../email.js";
-import ConnectionRequest from "../models/connection.js";
+// import ConnectionRequest from "../models/user.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -399,7 +402,6 @@ export async function githubAuthorization(req, res) {
 }
 
 export async function googleAuthorization(req, res) {
-  console.log("first");
   try {
     const { code, redirectUri } = req.body;
 
@@ -505,58 +507,88 @@ export async function linkedinAuthorization(req, res) {
   try {
     const { code, redirectUri } = req.body;
 
-    // Step 1: Exchange code for access token
-    const tokenRes = await fetch(
+    const tokenParams = new URLSearchParams({
+      grant_type: "authorization_code",
+      code: code,
+      redirect_uri: redirectUri,
+      client_id: process.env.LINKEDIN_CLIENT_ID,
+      client_secret: process.env.LINKEDIN_CLIENT_SECRET,
+    });
+    // console.log(tokenParams);
+
+    const tokenResponse = await axios.post(
       "https://www.linkedin.com/oauth/v2/accessToken",
+      tokenParams,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          code,
-          redirect_uri: redirectUri,
-          client_id: process.env.LINKEDIN_CLIENT_ID,
-          client_secret: process.env.LINKEDIN_CLIENT_SECRET,
-        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       }
     );
 
-    const tokenData = await tokenRes.json();
-    const access_token = tokenData.access_token;
+    const accessToken = tokenResponse.data.access_token;
+    // console.log(accessToken);
 
-    // console.log("hello " , tokenData);
+    const userInfoResponse = await axios.get(
+      "https://api.linkedin.com/v2/userinfo",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+        },
+      }
+    );
 
-    if (!access_token) {
-      return res.status(400).json({ message: "LinkedIn token fetch failed" });
+    const userInfo = userInfoResponse.data;
+    const { email, sub, name } = userInfo;
+    console.log(userInfo);
+
+    let userExists = await Register.findOne({ oauthId: sub });
+    if (!userExists) {
+      const Registeruser = new Register({
+        email,
+        oauthProvider: "linkedin",
+        oauthId: sub,
+        name,
+      });
+      await Registeruser.save();
+    }
+    const userDetail = await Register.findOne({ oauthId: sub });
+    const token = generateToken(userDetail._id);
+    let user = await Profile.findOne({ uniqueId: userDetail._id });
+
+    if (!user) {
+      user = new Profile({
+        uniqueId: userDetail._id,
+        userName: userDetail.userName,
+        email: userDetail.email,
+        name: userDetail.name || "",
+        phone: "",
+        gender: "",
+        dob: "",
+        Address: "",
+        state: "",
+        city: "",
+        bio: "",
+        profilePic: userDetail.profileUrl || "",
+        oauthProvider: "linkedin",
+        firstTimeSignIn: false,
+      });
+      await user.save();
     }
 
-    // Step 2: Fetch LinkedIn profile
-    const [profileRes, emailRes] = await Promise.all([
-      fetch("https://api.linkedin.com/v2/me", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      }),
-      fetch(
-        "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))",
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      ),
-    ]);
-
-    const profile = await profileRes.json();
-    console.log(profile);
-    const emailData = await emailRes.json();
-    console.log(emailData);
-    const email = emailData.elements?.[0]?.["handle~"]?.emailAddress;
-
-    return res.status(200).json({
-      message: "LinkedIn Auth Successful",
-      user: {
-        id: profile.id,
-        name: `${profile.localizedFirstName} ${profile.localizedLastName}`,
-        email,
-      },
-    });
+    return res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        maxAge: 2 * 60 * 60 * 1000,
+      })
+      .status(201)
+      .json({
+        message: "Linkedin Authentication Successful",
+        user: user,
+      });
   } catch (err) {
     console.error("LinkedIn Auth Error:", err.message);
     res
@@ -574,86 +606,143 @@ export async function findAllProfiles(req, res) {
   }
 }
 export async function findAllPosts(req, res) {
-  
   try {
     const users = await userPost.find().select("-password");
-    
+
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
   }
 }
 
-// controllers/connectionController.js
-export const sendConnectionRequest = async (req, res) => {
+export async function sendRequest(req, res) {
   try {
-    const senderId = req.user.id;
-    console.log(req.user.id);
+    const receiverId = req.params.receiverId;
+    const senderId = req.user;
 
-    const { receiverId } = req.body;
-    console.log(receiverId);
+    const existingRequest = await friendRequest.findOne({
+      sender: senderId,
+      receiver: receiverId,
+    });
 
-    if (senderId === receiverId) {
-      return res
-        .status(400)
-        .json({ message: "You can't connect with yourself." });
+    if (existingRequest) {
+      if (existingRequest.status === "pending") {
+        return res.status(429).json({
+          message:
+            "You have already sent a request. Wait for it to be accepted or rejected",
+        });
+      } else if (existingRequest.status === "accepted") {
+        return res.status(400).json({ message: "You are already friends" });
+      }
     }
 
-    // Save to DB
-    await ConnectionRequest.create({
+    const newRequest = new friendRequest({
       sender: senderId,
       receiver: receiverId,
       status: "pending",
     });
+    await newRequest.save();
 
-    res.status(201).json({ message: "Request sent." });
-  } catch (err) {
-    console.error("Send request error:", err);
-    res.status(500).json({ error: "Failed to send request" });
+    await user.findByIdAndUpdate(senderId, {
+      $push: { sendRequest: receiverId },
+    });
+    await user.findByIdAndUpdate(receiverId, {
+      $push: { receivedRequest: newRequest._id },
+    });
+
+    res.status(200).json({
+      message: "Friend request sent successfully",
+      requestId: newRequest._id,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-};
+}
 
-// controllers/connectionController.js
-
-export const handleConnectionRequest = async (req, res) => {
+export async function acceptRequest(req, res) {
   try {
-    const userId = req.user.id;
-    console.log(userId); // authenticated user
-    const { requestId, action } = req.body;
-    console.log(req.body); // action = 'accept' or 'reject'
+    const requestId = req.params.requestId;
 
-    if (!["accept", "reject"].includes(action)) {
-      return res.status(400).json({ message: "Invalid action" });
+    const FriendRequest = await friendRequest.findById(requestId);
+
+    if (
+      !FriendRequest ||
+      FriendRequest.status === "accept" ||
+      FriendRequest.status === "reject"
+    ) {
+      return res
+        .status(404)
+        .json({ message: "Request not found or already accepted" });
     }
 
-    const request = await ConnectionRequest.findById(requestId);
-    if (!request) {
-      return res.status(404).json({ message: "Request not found" });
-    }
+    const senderId = FriendRequest.sender;
+    const receiverId = FriendRequest.receiver;
 
-    if (request.receiver.toString() !== userId) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+    FriendRequest.status = "accept";
+    await FriendRequest.save();
 
-    request.status = action === "accept" ? "accepted" : "rejected";
-    await request.save();
+    await user.findByIdAndUpdate(senderId, { $push: { friends: receiverId } });
+    await user.findByIdAndUpdate(receiverId, { $push: { friends: senderId } });
 
-    res.status(200).json({ message: ` Request ${request.status}` });
-  } catch (err) {
-    console.error("Handle request error:", err);
-    res.status(500).json({ error: "Failed to handle request" });
+    await user.findByIdAndUpdate(senderId, {
+      $pull: { sendRequest: receiverId },
+    });
+    await user.findByIdAndUpdate(receiverId, {
+      $pull: { receivedRequest: FriendRequest._id },
+    });
+
+    res.status(200).json({ message: "Friend Request Accepted!" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
-};
+}
 
-export const getPendingRequests = async (req, res) => {
-  const userId = req.user.id;
-  const requests = await ConnectionRequest.find({
-    receiver: userId,
-    status: "pending",
-  }).populate("sender", "userName email profilePic");
+export async function rejectRequest(req, res) {
+  try {
+    const requestId = req.params.requestId;
 
-  res.json(requests);
-};
+    const FriendRequest = await friendRequest.findById(requestId);
+
+    if (
+      !FriendRequest ||
+      FriendRequest.status === "reject" ||
+      FriendRequest.status === "accept"
+    ) {
+      return res
+        .status(404)
+        .json({ message: "Request not found or already Rejected" });
+    }
+
+    const senderId = FriendRequest.sender;
+    const receiverId = FriendRequest.receiver;
+
+    FriendRequest.status = "reject";
+    await FriendRequest.save();
+
+    await user.findByIdAndUpdate(senderId, {
+      $pull: { sendRequest: receiverId },
+    });
+    await user.findByIdAndUpdate(receiverId, {
+      $pull: { receivedRequest: FriendRequest._id },
+    });
+
+    res.status(200).json({ message: "Friend Request Rejected!" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function requestIdDetail(req, res) {
+  try {
+    const request = await friendRequest.findById(req.params.requestId);
+    res.json({ senderProfile: request.sender });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching request" });
+  }
+}
 
 export async function findUserName(req, res) {
   const { username } = req.query;

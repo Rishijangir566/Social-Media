@@ -3,6 +3,7 @@ import Register from "../models/register.js";
 
 export const protect = async (req, res, next) => {
   const { token } = req.cookies;
+  // console.log(token);
 
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
@@ -10,8 +11,10 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // console.log(decoded);
 
     req.user = await Register.findById(decoded.id).select("-password");
+    
 
     next();
   } catch (err) {

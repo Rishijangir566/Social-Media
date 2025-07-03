@@ -12,7 +12,6 @@ const DisplayPosts = () => {
 
   async function fetchAllPosts() {
     try {
-      const userRes = await instance.get("/api/users/me");
       const allProfilesRes = await instance.get("/api/users/allposts");
       console.log(allProfilesRes);
       setPosts(allProfilesRes.data);
@@ -23,13 +22,17 @@ const DisplayPosts = () => {
   }
 
   return (
-    <div className="max-w-6xl mt-25 w-[100%] mx-auto px-4 py-6">
+    <div className="max-w-6xl mt-25 mx-auto px-4 py-6">
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {/* Grid layout: 1 column on mobile, 2 on medium+ screens */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {posts.map((item, index) => (
-          <div key={index} className="bg-white shadow-md rounded-2xl p-5">
+          <div
+            key={index}
+            className={`bg-white shadow-md rounded-2xl p-5 ${
+              !item.postImage ? "min-h-[300px]" : ""
+            }`}
+          >
             {/* Header */}
             <div className="flex items-start gap-3">
               <img

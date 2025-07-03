@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import instance from "../axiosConfig.js";
-import { useEffect } from "react";
 
 const Post = () => {
   const [content, setContent] = useState("");
@@ -16,7 +15,6 @@ const Post = () => {
     async function fetchUser() {
       try {
         const res = await instance.get("/api/users/me");
-        console.log(res);
         setUserDetail(res.data);
         setUserId(res.data.uniqueId);
         setUserName(res.data.userName);
@@ -43,11 +41,9 @@ const Post = () => {
       formData.append("userName", userName);
       formData.append("content", content);
       formData.append("hashtags", hashtags);
-      
       if (postImage) formData.append("postImage", postImage);
 
-      const res = await instance.post("/user/shareData", formData);
-      console.log(res);
+      await instance.post("/user/shareData", formData);
       alert("Post created successfully!");
       setContent("");
       setHashtags("");
@@ -60,60 +56,100 @@ const Post = () => {
   };
 
   return (
-    <>
-      <div className="w-[100%]">
-        {userDetail?.profilePic && (
-        <img
-          src={userDetail.profilePic}
-          alt="Preview"
-          className="w-32 h-32 object-cover rounded-full mx-auto mb-4  mt-30"
-        />
-      )}
-      <h1 className="text-center">User-Name: {userDetail?.userName}</h1>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow rounded p-4 w-full max-w-xl mx-auto"
-      >
-        <textarea
-          className="w-full border rounded p-2 mb-3"
-          placeholder="What do you want to talk about?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-        />
+    <div className="min-h-screen mt-15 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-100 py-10 px-4">
+      <div className="max-w-2xl mx-auto">
 
-        {previewImage && (
-          <img
-            src={previewImage}
-            alt="Preview"
-            className="mb-3 max-h-60 object-contain rounded"
-          />
-        )}
+        {/* User Profile Section */}
+        <div className="text-center mb-6">
+          {userDetail?.profilePic && (
+            <div className="relative inline-block">
+              <img
+                src={userDetail.profilePic}
+                alt="User Profile"
+                className="w-24 h-24 object-cover rounded-full border-4 border-white shadow-md ring-4 ring-blue-100 transition-transform duration-300 hover:scale-105"
+              />
+           
+            </div>
+          )}
+          <h1 className=" text-2xl font-bold text-gray-800">
+            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {userDetail?.userName}
+            </span>
+          </h1>
+        </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="mb-3"
-        />
-
-        <input
-          type="text"
-          placeholder="#hashtags (comma separated)"
-          className="w-full border rounded p-2 mb-3"
-          value={hashtags}
-          onChange={(e) => setHashtags(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        {/* Post Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-lg border border-white/30 p-8 space-y-6"
         >
-          Post
-        </button>
-      </form>
+
+          {/* Content Input */}
+          <div className="relative">
+            <textarea
+              className="w-full p-4 min-h-[120px] border-2 border-gray-200 rounded-2xl resize-none text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition"
+              placeholder="What do you want to talk about?"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+            />
+            <span className="absolute bottom-3 right-3 text-sm text-gray-400 bg-white/80 px-2 py-1 rounded-md">
+              {content.length} chars
+            </span>
+          </div>
+
+          {/* Image Preview */}
+          {previewImage && (
+            <div className="relative group">
+              <img
+                src={previewImage}
+                alt="Post Preview"
+                className="w-full max-h-60 object-contain rounded-2xl border-2 border-gray-100 shadow-lg group-hover:shadow-xl transition"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-2xl transition" />
+            </div>
+          )}
+
+          {/* Image Upload */}
+          <div className="relative">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 hover:border-blue-400 hover:bg-blue-50/50 transition"
+            />
+            <span className="absolute top-2 right-4 text-sm text-gray-400 bg-white px-2 py-1 rounded-md">
+              Images only
+            </span>
+          </div>
+
+          {/* Hashtag Input */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="#hashtags (comma separated)"
+              className="w-full p-4 border-2 border-gray-200 rounded-2xl text-gray-700 placeholder-gray-400 shadow-sm hover:shadow-md focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition"
+              value={hashtags}
+              onChange={(e) => setHashtags(e.target.value)}
+            />
+            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400 pointer-events-none">
+              
+            </span>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-lg font-semibold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 focus:ring-4 focus:ring-blue-200"
+          >
+             Share Your Post
+          </button>
+        </form>
+
+        {/* Footer */}
+      
       </div>
-    </>
+    </div>
   );
 };
 
