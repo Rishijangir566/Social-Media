@@ -5,19 +5,19 @@ import io from "socket.io-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL;
-const socket = io(SOCKET_SERVER_URL, {
-  withCredentials: true,
-});
+// const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL;
+// const socket = io(SOCKET_SERVER_URL, {
+//   withCredentials: true,
+// });
 
 const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
   const [error, setError] = useState("");
   const [userId, setUserId] = useState(null);
 
-  const [pendingRequests, setPendingRequests] = useState([]);
-  const [acceptedConnections, setAcceptedConnections] = useState([]);
-  const [rejectedRequests, setRejectedRequests] = useState([]);
+  // const [pendingRequests, setPendingRequests] = useState([]);
+  // const [acceptedConnections, setAcceptedConnections] = useState([]);
+  // const [rejectedRequests, setRejectedRequests] = useState([]);
 
   // ✅ Fetch initial data
   useEffect(() => {
@@ -25,45 +25,45 @@ const HomePage = () => {
   }, []);
 
   // ✅ Setup socket listeners for accept/reject
-  useEffect(() => {
-    socket.on("request_accepted", ({ senderId, receiverId }) => {
-      if (senderId === userId) {
-        setAcceptedConnections((prev) => [...prev, receiverId]);
-        setPendingRequests((prev) => prev.filter((id) => id !== receiverId));
-        toast.success("Your connection request was accepted!");
-      }
-    });
+  // useEffect(() => {
+  //   socket.on("request_accepted", ({ senderId, receiverId }) => {
+  //     if (senderId === userId) {
+  //       setAcceptedConnections((prev) => [...prev, receiverId]);
+  //       setPendingRequests((prev) => prev.filter((id) => id !== receiverId));
+  //       toast.success("Your connection request was accepted!");
+  //     }
+  //   });
 
-    socket.on("request_rejected", ({ senderId, receiverId }) => {
-      if (senderId === userId) {
-        setRejectedRequests((prev) => [...prev, receiverId]);
-        setPendingRequests((prev) => prev.filter((id) => id !== receiverId));
-        toast.info("Your connection request was rejected.");
-      }
-    });
+  //   socket.on("request_rejected", ({ senderId, receiverId }) => {
+  //     if (senderId === userId) {
+  //       setRejectedRequests((prev) => [...prev, receiverId]);
+  //       setPendingRequests((prev) => prev.filter((id) => id !== receiverId));
+  //       toast.info("Your connection request was rejected.");
+  //     }
+  //   });
 
-    return () => {
-      socket.off("request_accepted");
-      socket.off("request_rejected");
-    };
-  }, [userId]);
+  //   return () => {
+  //     socket.off("request_accepted");
+  //     socket.off("request_rejected");
+  //   };
+  // }, [userId]);
 
   // ✅ Socket listener for send request success/error
-  useEffect(() => {
-    socket.on("request_sent", ({ receiverId }) => {
-      setPendingRequests((prev) => [...prev, receiverId]);
-      toast.success("Connection request sent!");
-    });
+  // useEffect(() => {
+  //   socket.on("request_sent", ({ receiverId }) => {
+  //     setPendingRequests((prev) => [...prev, receiverId]);
+  //     toast.success("Connection request sent!");
+  //   });
 
-    socket.on("request_error", ({ error }) => {
-      toast.error(`Error: ${error}`);
-    });
+  //   socket.on("request_error", ({ error }) => {
+  //     toast.error(`Error: ${error}`);
+  //   });
 
-    return () => {
-      socket.off("request_sent");
-      socket.off("request_error");
-    };
-  }, []);
+  //   return () => {
+  //     socket.off("request_sent");
+  //     socket.off("request_error");
+  //   };
+  // }, []);
 
   // ✅ Get user and profiles
   async function fetchAllData() {

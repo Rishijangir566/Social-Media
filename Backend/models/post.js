@@ -1,35 +1,5 @@
 import mongoose from "mongoose";
 
-// const userPostSchema = new mongoose.Schema(
-//   {
-//     uniqueId: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "Register",
-//       required: true,
-//     },
-//     content: {
-//       type: String,
-//       required: true,
-//     },
-//     postImage: {
-//       type: String,
-//     },
-//     hashtags: [
-//       {
-//         type: String,
-//       },
-//     ],
-//     userName: { type: String },
-//     profilePic: { type: String },
-//   },
-//   {
-//     timestamps: true,
-//   }
-// );
-
-// const userPost = mongoose.model("userPost", userPostSchema);
-// export default userPost;
-
 const userPostSchema = new mongoose.Schema(
   {
     uniqueId: {
@@ -63,7 +33,16 @@ const userPostSchema = new mongoose.Schema(
       },
     ],
 
-    comments: [],
+    comments: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Register",
+        },
+        text: String,
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   {
     timestamps: true,
