@@ -72,7 +72,7 @@ function Login() {
   }
   const handleLinkedInLogin = () => {
     const clientId = import.meta.env.VITE_LINKEDIN_CLIENT_ID;
-    const redirectUri = "http://localhost:5173/linkedin/callback";
+    const redirectUri = "https://social-media-1-mfvc.onrender.com/linkedin/callback";
 
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(
       redirectUri
