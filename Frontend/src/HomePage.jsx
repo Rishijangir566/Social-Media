@@ -123,8 +123,8 @@ const HomePage = () => {
       <ul className="space-y-4 flex flex-wrap gap-4">
         {profiles.map((profile, index) => {
           const profileId = profile.uniqueId;
-          const label = getButtonLabel(profileId);
-          const disabled = isButtonDisabled(profileId);
+          // const label = getButtonLabel(profileId);
+          // const disabled = isButtonDisabled(profileId);
 
           return (
             <div
