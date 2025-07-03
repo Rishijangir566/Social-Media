@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import instance from "./axiosConfig";
 import ProfileImg from "./assets/Icons.png";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -84,27 +84,27 @@ const HomePage = () => {
   }
 
   // ✅ Emit connection request
-  const sendConnectionRequest = (receiverId) => {
-    if (!socket.connected) {
-      console.error("⚠️ Socket not connected!");
-      toast.error("Socket not connected!");
-      return;
-    }
+  // const sendConnectionRequest = (receiverId) => {
+  //   if (!socket.connected) {
+  //     console.error("⚠️ Socket not connected!");
+  //     toast.error("Socket not connected!");
+  //     return;
+  //   }
     
-    socket.emit("send_connection_request", {
-      senderId: userId,
-      receiverId,
-    });
-    console.log("first")
-  };
+  //   socket.emit("send_connection_request", {
+  //     senderId: userId,
+  //     receiverId,
+  //   });
+  //   console.log("first")
+  // };
 
   // ✅ UI logic
-  const getButtonLabel = (profileId) => {
-    if (acceptedConnections.includes(profileId)) return "Message";
-    if (pendingRequests.includes(profileId)) return "Pending";
-    if (rejectedRequests.includes(profileId)) return "Rejected";
-    return "Connect";
-  };
+  // const getButtonLabel = (profileId) => {
+  //   if (acceptedConnections.includes(profileId)) return "Message";
+  //   if (pendingRequests.includes(profileId)) return "Pending";
+  //   if (rejectedRequests.includes(profileId)) return "Rejected";
+  //   return "Connect";
+  // };
 
   const isButtonDisabled = (profileId) => {
     return pendingRequests.includes(profileId) || rejectedRequests.includes(profileId);
