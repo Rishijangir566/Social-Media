@@ -106,13 +106,13 @@ const HomePage = () => {
   //   return "Connect";
   // };
 
-  const isButtonDisabled = (profileId) => {
-    return pendingRequests.includes(profileId) || rejectedRequests.includes(profileId);
-  };
+  // const isButtonDisabled = (profileId) => {
+  //   return pendingRequests.includes(profileId) || rejectedRequests.includes(profileId);
+  // };
 
-  const handleMessageClick = (profileId) => {
-    alert(`Start messaging with user ID: ${profileId}`);
-  };
+  // const handleMessageClick = (profileId) => {
+  //   alert(`Start messaging with user ID: ${profileId}`);
+  // };
 
   if (error) return <div>{error}</div>;
 
