@@ -42,7 +42,7 @@ const Navbar = () => {
   return (
     <>
       {/* Glassmorphism Navbar */}
-      <nav className="border-b border-white/10 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-opacity-80 shadow-2xl">
+      <nav className="border-b border-white/10 bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-opacity-80 shadow-2xl">
         {/* Animated background dots */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rounded-full animate-pulse"></div>
@@ -116,58 +116,61 @@ const Navbar = () => {
               </button>
 
               {/* Create */}
-             <Link  to="/app/post">
-              <button
-                className={`relative p-3 rounded-xl transition-all duration-300 group ${
-                  activeTab === "Create"
-                    ? "bg-white/20 text-white shadow-lg"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-                title="Create"
-                onClick={() => setActiveTab("Create")}
-              >
-                <PlusSquare className="h-6 w-6" />
-                {activeTab === "Create" && (
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
-                )}
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button></Link>
+              <Link to="/app/post">
+                <button
+                  className={`relative p-3 rounded-xl transition-all duration-300 group ${
+                    activeTab === "Create"
+                      ? "bg-white/20 text-white shadow-lg"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  }`}
+                  title="Create"
+                  onClick={() => setActiveTab("Create")}
+                >
+                  <PlusSquare className="h-6 w-6" />
+                  {activeTab === "Create" && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
+                  )}
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </Link>
 
               {/* Activity */}
-             <Link to="/app/notification">
-              <button
-                className={`relative p-3 rounded-xl transition-all duration-300 group ${
-                  activeTab === "Activity"
-                    ? "bg-white/20 text-white shadow-lg"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-                title="Activity"
-                onClick={() => setActiveTab("Activity")}
-              >
-                <Heart className="h-6 w-6" />
-                {activeTab === "Activity" && (
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
-                )}
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button></Link>
+              <Link to="/app/notification">
+                <button
+                  className={`relative p-3 rounded-xl transition-all duration-300 group ${
+                    activeTab === "Activity"
+                      ? "bg-white/20 text-white shadow-lg"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  }`}
+                  title="Activity"
+                  onClick={() => setActiveTab("Activity")}
+                >
+                  <Heart className="h-6 w-6" />
+                  {activeTab === "Activity" && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
+                  )}
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </Link>
 
               {/* Messages */}
-           <Link to="/app/message">
-              <button
-                className={`relative p-3 rounded-xl transition-all duration-300 group ${
-                  activeTab === "Messages"
-                    ? "bg-white/20 text-white shadow-lg"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-                title="Messages"
-                onClick={() => setActiveTab("Messages")}
-              >
-                <MessageCircle className="h-6 w-6" />
-                {activeTab === "Messages" && (
-                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
-                )}
-                <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button></Link>
+              <Link to="/app/message">
+                <button
+                  className={`relative p-3 rounded-xl transition-all duration-300 group ${
+                    activeTab === "Messages"
+                      ? "bg-white/20 text-white shadow-lg"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
+                  }`}
+                  title="Messages"
+                  onClick={() => setActiveTab("Messages")}
+                >
+                  <MessageCircle className="h-6 w-6" />
+                  {activeTab === "Messages" && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
+                  )}
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </Link>
 
               {/* Profile */}
               <button

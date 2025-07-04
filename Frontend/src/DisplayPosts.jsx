@@ -69,24 +69,10 @@ const DisplayPosts = () => {
   };
 
   return (
-    <div className="min-h-screen mt-10 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen mt-10 bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900">
       {/* Animated Particles */}
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="absolute inset-0 ">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-ping "
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`,
-              }}
-            ></div>
-          ))}
-        </div>
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Social Feed</h1>

@@ -39,7 +39,7 @@ const HomePage = () => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="pl-[5%] pt-10 w-[100%] mt-15">
+    <div className="pl-[5%] pt-10 w-[100%] mt-15 min-h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 text-white">
       <ToastContainer />
       <h1 className="text-2xl font-bold mb-4">All Profiles</h1>
       <ul className="space-y-4 flex flex-wrap gap-4">
@@ -49,9 +49,9 @@ const HomePage = () => {
           return (
             <div
               key={index}
-              className="w-[260px] h-[300px] bg-white rounded-xl shadow-md border relative"
+              className="w-[260px] h-[300px] rounded-xl shadow-md border relative bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900"
             >
-              <div className="bg-slate-300 h-[90px] rounded-t-xl relative">
+              <div className="h-[90px] rounded-t-xl relative">
                 <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-10 w-[80px] h-[80px] rounded-full bg-gray-200 border-4 border-white overflow-hidden">
                   <img
                     src={profile.profilePic || ProfileImg}
@@ -61,11 +61,11 @@ const HomePage = () => {
                 </div>
               </div>
 
-              <div className="pt-14 px-4 text-center">
-                <p className="font-semibold text-black text-[16px]">
+              <div className="pt-14 px-4 text-center ">
+                <p className="font-semibold text-black text-[16px] text-white">
                   {profile.userName || profile.name}
                 </p>
-                <p className="text-gray-600 text-sm mt-1">{profile.email}</p>
+                <p className="text-gray-600 text-sm mt-1 text-white">{profile.email}</p>
               </div>
 
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
