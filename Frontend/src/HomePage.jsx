@@ -49,10 +49,10 @@ const HomePage = () => {
           return (
             <div
               key={index}
-              className="w-[260px] h-[300px] rounded-xl shadow-md border relative bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900"
-            >
+              className="w-[260px] h-[300px] rounded-xl shadow-md border border-gray-400 relative bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900"
+              >
               <div className="h-[90px] rounded-t-xl relative">
-                <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-10 w-[80px] h-[80px] rounded-full bg-gray-200 border-4 border-white overflow-hidden">
+                <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-10 w-[80px] h-[80px] rounded-full bg-gray-200 border-3 border-white overflow-hidden">
                   <img
                     src={profile.profilePic || ProfileImg}
                     alt="profile"
@@ -65,7 +65,9 @@ const HomePage = () => {
                 <p className="font-semibold text-black text-[16px] text-white">
                   {profile.userName || profile.name}
                 </p>
-                <p className="text-gray-600 text-sm mt-1 text-white">{profile.email}</p>
+                <p className="text-gray-600 text-sm mt-1 text-white">
+                  {profile.email}
+                </p>
               </div>
 
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">

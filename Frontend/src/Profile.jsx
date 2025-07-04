@@ -104,6 +104,36 @@ function Profile() {
     }
   }, [firstTimeSignIn, navigate]);
 
+  // const handleChange = (e) => {
+  //   const { name, value, files } = e.target;
+
+  //   if (files && files.length > 0) {
+  //     const file = files[0];
+
+  //     if (file.size > 2 * 1024 * 1024) {
+  //       alert("File size should be less than 2MB");
+
+  //       e.target.value = "";
+
+  //       return;
+  //     }
+
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]: file,
+  //     }));
+  //   } else {
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]: value,
+  //     }));
+
+  //     if (name === "userName") {
+  //       setUsername(value);
+  //     }
+  //   }
+  // };
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -112,16 +142,22 @@ function Profile() {
 
       if (file.size > 2 * 1024 * 1024) {
         alert("File size should be less than 2MB");
-
         e.target.value = "";
-
         return;
       }
 
+      // Set form data and preview image
       setFormData((prev) => ({
         ...prev,
         [name]: file,
       }));
+
+      // Generate preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -133,6 +169,7 @@ function Profile() {
       }
     }
   };
+
   const handleSubmit = async (e) => {
     console.log("first");
     e.preventDefault();
@@ -209,22 +246,22 @@ function Profile() {
               <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full">
                 <Edit3 className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-4xl md:text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-2xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
                 Edit Profile
               </h1>
             </div>
             <p className="text-white/70 text-small max-w-2xl mx-auto">
-              Create your perfect profile and let your personality shine through
+              Update your profile to reflect your personal and professional identity.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Profile Picture Section */}
-            <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl">
+            {/* <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"> */}
               <div className="text-center">
                 <div className="relative inline-block group">
                   <div className="relative">
-                    <div className="w-32 h-32 md:w-30 md:h-30 mx-auto rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-1 shadow-2xl">
+                    <div className="w-24 h-24 md:w-30 md:h-30 mx-auto rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-1 shadow-2xl">
                       <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-sm overflow-hidden">
                         {imagePreview || userDetail?.profilePic ? (
                           <img
@@ -255,7 +292,7 @@ function Profile() {
                   Click to upload your profile picture
                 </p>
               </div>
-            </div>
+            {/* </div> */}
 
             {/* Form Fields */}
             <div className="grid md:grid-cols-2 gap-6">
