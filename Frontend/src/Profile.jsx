@@ -12,9 +12,6 @@ import {
   Heart,
   Star,
   Sparkles,
-  Upload,
-  Check,
-  X,
 } from "lucide-react";
 import instance from "./axiosConfig.js";
 import { useNavigate } from "react-router-dom";

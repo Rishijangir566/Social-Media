@@ -3,6 +3,7 @@ import Profile from "../models/profile.js";
 import userPost from "../models/post.js";
 import user from "../models/register.js";
 import friendRequest from "../models/connection.js";
+import mongoose from "mongoose";
 import axios from "axios";
 
 import { v2 as cloudinary } from "cloudinary";
@@ -615,135 +616,6 @@ export async function findAllPosts(req, res) {
   }
 }
 
-export async function sendRequest(req, res) {
-  try {
-    const receiverId = req.params.receiverId;
-    const senderId = req.user;
-
-    const existingRequest = await friendRequest.findOne({
-      sender: senderId,
-      receiver: receiverId,
-    });
-
-    if (existingRequest) {
-      if (existingRequest.status === "pending") {
-        return res.status(429).json({
-          message:
-            "You have already sent a request. Wait for it to be accepted or rejected",
-        });
-      } else if (existingRequest.status === "accepted") {
-        return res.status(400).json({ message: "You are already friends" });
-      }
-    }
-
-    const newRequest = new friendRequest({
-      sender: senderId,
-      receiver: receiverId,
-      status: "pending",
-    });
-    await newRequest.save();
-
-    await user.findByIdAndUpdate(senderId, {
-      $push: { sendRequest: receiverId },
-    });
-    await user.findByIdAndUpdate(receiverId, {
-      $push: { receivedRequest: newRequest._id },
-    });
-
-    res.status(200).json({
-      message: "Friend request sent successfully",
-      requestId: newRequest._id,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-export async function acceptRequest(req, res) {
-  try {
-    const requestId = req.params.requestId;
-
-    const FriendRequest = await friendRequest.findById(requestId);
-
-    if (
-      !FriendRequest ||
-      FriendRequest.status === "accept" ||
-      FriendRequest.status === "reject"
-    ) {
-      return res
-        .status(404)
-        .json({ message: "Request not found or already accepted" });
-    }
-
-    const senderId = FriendRequest.sender;
-    const receiverId = FriendRequest.receiver;
-
-    FriendRequest.status = "accept";
-    await FriendRequest.save();
-
-    await user.findByIdAndUpdate(senderId, { $push: { friends: receiverId } });
-    await user.findByIdAndUpdate(receiverId, { $push: { friends: senderId } });
-
-    await user.findByIdAndUpdate(senderId, {
-      $pull: { sendRequest: receiverId },
-    });
-    await user.findByIdAndUpdate(receiverId, {
-      $pull: { receivedRequest: FriendRequest._id },
-    });
-
-    res.status(200).json({ message: "Friend Request Accepted!" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-export async function rejectRequest(req, res) {
-  try {
-    const requestId = req.params.requestId;
-
-    const FriendRequest = await friendRequest.findById(requestId);
-
-    if (
-      !FriendRequest ||
-      FriendRequest.status === "reject" ||
-      FriendRequest.status === "accept"
-    ) {
-      return res
-        .status(404)
-        .json({ message: "Request not found or already Rejected" });
-    }
-
-    const senderId = FriendRequest.sender;
-    const receiverId = FriendRequest.receiver;
-
-    FriendRequest.status = "reject";
-    await FriendRequest.save();
-
-    await user.findByIdAndUpdate(senderId, {
-      $pull: { sendRequest: receiverId },
-    });
-    await user.findByIdAndUpdate(receiverId, {
-      $pull: { receivedRequest: FriendRequest._id },
-    });
-
-    res.status(200).json({ message: "Friend Request Rejected!" });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
-export async function requestIdDetail(req, res) {
-  try {
-    const request = await friendRequest.findById(req.params.requestId);
-    res.json({ senderProfile: request.sender });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching request" });
-  }
-}
-
 export async function findUserName(req, res) {
   const { username } = req.query;
 
@@ -797,7 +669,6 @@ export const likePost = async (req, res) => {
 
 // COMMENT on a post
 export const commentOnPost = async (req, res) => {
-  
   const { postId } = req.params;
   const { userId, text } = req.body;
 
@@ -810,5 +681,180 @@ export const commentOnPost = async (req, res) => {
     res.json(post);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// export const sendFriendRequest = async (req, res) => {
+//   try {
+//     const senderId = req.user._id;
+//     const receiverIdParam = req.params.receiverId;
+
+//     if (!receiverIdParam) {
+//       return res.status(400).json({ message: "Receiver ID is required" });
+//     }
+
+//     const receiverId = new mongoose.Types.ObjectId(receiverIdParam);
+
+//     if (senderId.equals(receiverId)) {
+//       return res
+//         .status(400)
+//         .json({ message: "You cannot send a request to yourself" });
+//     }
+
+//     // Ensure users exist
+//     const [senderUser, receiverUser] = await Promise.all([
+//       Register.findById(senderId),
+//       Register.findById(receiverId),
+//     ]);
+
+//     if (!senderUser || !receiverUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Find or create friend request docs
+//     const [senderDoc, receiverDoc] = await Promise.all([
+//       friendRequest.findOneAndUpdate(
+//         { uniqueId: senderId },
+//         { $setOnInsert: { uniqueId: senderId } },
+//         { upsert: true, new: true }
+//       ),
+//       friendRequest.findOneAndUpdate(
+//         { uniqueId: receiverId },
+//         { $setOnInsert: { uniqueId: receiverId } },
+//         { upsert: true, new: true }
+//       ),
+//     ]);
+
+//     // Check if request already sent
+//     const alreadySent = senderDoc.sentRequests.some(
+//       (id) => id.toString() === receiverId.toString()
+//     );
+//     if (alreadySent) {
+//       return res.status(400).json({ message: "Friend request already sent" });
+//     }
+
+//     // Add receiver to sender's sentRequests and sender to receiver's receivedRequests
+//     senderDoc.sentRequests.push(receiverId);
+//     receiverDoc.receivedRequests.push(senderId);
+
+//     await Promise.all([senderDoc.save(), receiverDoc.save()]);
+
+//     return res.status(200).json({ message: "Friend request sent!" });
+//   } catch (error) {
+//     console.error("Send Friend Request Error:", error);
+//     return res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
+// Get friend request info for a user (received, sent, connections)
+
+export const sendFriendRequest = async (req, res) => {
+  console.log("first");
+  try {
+    const senderId = req.user._id; // ✅ Profile ID from auth middleware
+    const receiverIdParam = req.params.receiverId;
+
+    console.log(senderId, receiverIdParam);
+
+    if (!receiverIdParam) {
+      return res.status(400).json({ message: "Receiver ID is required" });
+    }
+
+    const receiverId = new mongoose.Types.ObjectId(receiverIdParam);
+
+    if (senderId.equals(receiverId)) {
+      return res
+        .status(400)
+        .json({ message: "You cannot send a request to yourself" });
+    }
+
+    // ✅ Check both Profile documents exist
+    const [senderProfile, receiverProfile] = await Promise.all([
+      Profile.findOne({ uniqueId: senderId }),
+      Profile.findOne({ uniqueId: receiverId }),
+    ]);
+
+    if (!senderProfile || !receiverProfile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+
+    // ✅ Find or create friendRequest docs
+    const [senderDoc, receiverDoc] = await Promise.all([
+      friendRequest.findOneAndUpdate(
+        { uniqueId: senderId },
+        { $setOnInsert: { uniqueId: senderId } },
+        { upsert: true, new: true }
+      ),
+      friendRequest.findOneAndUpdate(
+        { uniqueId: receiverId },
+        { $setOnInsert: { uniqueId: receiverId } },
+        { upsert: true, new: true }
+      ),
+    ]);
+
+    // ✅ Prevent duplicate requests
+    const alreadySent = senderDoc.sentRequests.some(
+      (id) => id.toString() === receiverId.toString()
+    );
+
+    if (alreadySent) {
+      return res.status(400).json({ message: "Friend request already sent" });
+    }
+
+    // ✅ Add to sent and received
+    senderDoc.sentRequests.push(receiverId);
+    receiverDoc.receivedRequests.push(senderId);
+
+    await Promise.all([senderDoc.save(), receiverDoc.save()]);
+
+    return res.status(200).json({ message: "Friend request sent!" });
+  } catch (error) {
+    console.error("Send Friend Request Error:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// export const getFriendRequestData = async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+
+//     const userFriendData = await friendRequest
+//       .findOne({ uniqueId: userId })
+//       .populate("sentRequests", "userName email profilePic")
+//       .populate("receivedRequests", "userName email profilePic")
+//       .populate("connections", "userName email profilePic");
+
+//     if (!userFriendData) {
+//       return res.status(404).json({ message: "No friend data found" });
+//     }
+
+//     res.status(200).json(userFriendData);
+//   } catch (error) {
+//     console.error("Get Friend Data Error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+export const getFriendRequestData = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.params.userId);
+    // ✅ cast to ObjectId
+
+    const userFriendData = await friendRequest
+       .findOne({ uniqueId: userId })
+      //  .populate("sentRequests", "userName email profile")
+  // .populate("receivedRequests", "userName email profilePic")
+  // .populate("connections", "userName email profilePic");
+
+    console.log(userFriendData);
+
+    if (!userFriendData) {
+      return res.status(404).json({ message: "No friend data found" });
+    }
+
+    res.status(200).json(userFriendData);
+  } catch (error) {
+    console.error("Get Friend Data Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
