@@ -3,6 +3,7 @@ import instance from "./axiosConfig";
 import ProfileImg from "./assets/Icons.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Sparkles } from "lucide-react";
 
 const HomePage = () => {
   const [profiles, setProfiles] = useState([]);
@@ -121,6 +122,21 @@ const HomePage = () => {
           );
         })}
       </ul>
+      {profiles.length === 0 && !error && (
+        <div className="text-center py-20 mt-20">
+          <div className="mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full mx-auto flex items-center justify-center">
+              <Sparkles className="text-white w-10 h-10" />
+            </div>
+          </div>
+          <h3 className="text-slate-300 text-xl font-medium mb-2">
+            No profiles found yet!
+          </h3>
+          <p className="text-slate-400">
+            No one except you has logged in with this application.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

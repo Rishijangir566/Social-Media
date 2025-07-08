@@ -100,10 +100,9 @@ const Post = () => {
               {userDetail?.userName || "Loading..."}
             </span>
             <p className="text-slate-400 mt-2 text-sm">
-            Share your thoughts with Your friends
-          </p>
+              Share your thoughts with Your friends
+            </p>
           </h1>
-          
         </div>
 
         {/* Post Form Container */}

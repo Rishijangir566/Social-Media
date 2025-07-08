@@ -101,36 +101,6 @@ function Profile() {
     }
   }, [firstTimeSignIn, navigate]);
 
-  // const handleChange = (e) => {
-  //   const { name, value, files } = e.target;
-
-  //   if (files && files.length > 0) {
-  //     const file = files[0];
-
-  //     if (file.size > 2 * 1024 * 1024) {
-  //       alert("File size should be less than 2MB");
-
-  //       e.target.value = "";
-
-  //       return;
-  //     }
-
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       [name]: file,
-  //     }));
-  //   } else {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       [name]: value,
-  //     }));
-
-  //     if (name === "userName") {
-  //       setUsername(value);
-  //     }
-  //   }
-  // };
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -178,6 +148,7 @@ function Profile() {
 
     if (!formData.userName) {
       alert("User Name is Required!");
+      return;
     }
     if (formData.userName.length < 5) {
       alert("Username must be at least 5 characters long.");
@@ -248,47 +219,48 @@ function Profile() {
               </h1>
             </div>
             <p className="text-white/70 text-small max-w-2xl mx-auto">
-              Update your profile to reflect your personal and professional identity.
+              Update your profile to reflect your personal and professional
+              identity.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Profile Picture Section */}
             {/* <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl"> */}
-              <div className="text-center">
-                <div className="relative inline-block group">
-                  <div className="relative">
-                    <div className="w-24 h-24 md:w-30 md:h-30 mx-auto rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-1 shadow-2xl">
-                      <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-sm overflow-hidden">
-                        {imagePreview || userDetail?.profilePic ? (
-                          <img
-                            src={imagePreview || userDetail?.profilePic}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <User className="w-12 h-12 text-white/60" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300">
-                      <Camera className="w-5 h-5 text-white" />
+            <div className="text-center">
+              <div className="relative inline-block group">
+                <div className="relative">
+                  <div className="w-24 h-24 md:w-30 md:h-30 mx-auto rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 p-1 shadow-2xl">
+                    <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-sm overflow-hidden">
+                      {imagePreview || userDetail?.profilePic ? (
+                        <img
+                          src={imagePreview || userDetail?.profilePic}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-12 h-12 text-white/60" />
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <input
-                    type="file"
-                    name="profilePic"
-                    accept="image/*"
-                    onChange={handleChange}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
+                  <div className="absolute -bottom-2 -right-2 p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <Camera className="w-5 h-5 text-white" />
+                  </div>
                 </div>
-                <p className="mt-4 text-white/70 text-sm">
-                  Click to upload your profile picture
-                </p>
+                <input
+                  type="file"
+                  name="profilePic"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
               </div>
+              <p className="mt-4 text-white/70 text-sm">
+                Click to upload your profile picture
+              </p>
+            </div>
             {/* </div> */}
 
             {/* Form Fields */}
@@ -463,6 +435,7 @@ function Profile() {
             </div>
           </form>
         </div>
+        
       </div>
     </div>
   );
