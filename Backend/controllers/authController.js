@@ -10,7 +10,6 @@ import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { sendVerificationEmail } from "../email.js";
-// import ConnectionRequest from "../models/user.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -35,6 +34,7 @@ function uploadToCloudinary(buffer, folder) {
   });
 }
 export async function handleRegister(req, res) {
+
   const { email, name, password } = req.body;
 
   const userExists = await Register.findOne({ email });
@@ -684,69 +684,7 @@ export const commentOnPost = async (req, res) => {
   }
 };
 
-// export const sendFriendRequest = async (req, res) => {
-//   try {
-//     const senderId = req.user._id;
-//     const receiverIdParam = req.params.receiverId;
 
-//     if (!receiverIdParam) {
-//       return res.status(400).json({ message: "Receiver ID is required" });
-//     }
-
-//     const receiverId = new mongoose.Types.ObjectId(receiverIdParam);
-
-//     if (senderId.equals(receiverId)) {
-//       return res
-//         .status(400)
-//         .json({ message: "You cannot send a request to yourself" });
-//     }
-
-//     // Ensure users exist
-//     const [senderUser, receiverUser] = await Promise.all([
-//       Register.findById(senderId),
-//       Register.findById(receiverId),
-//     ]);
-
-//     if (!senderUser || !receiverUser) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-
-//     // Find or create friend request docs
-//     const [senderDoc, receiverDoc] = await Promise.all([
-//       friendRequest.findOneAndUpdate(
-//         { uniqueId: senderId },
-//         { $setOnInsert: { uniqueId: senderId } },
-//         { upsert: true, new: true }
-//       ),
-//       friendRequest.findOneAndUpdate(
-//         { uniqueId: receiverId },
-//         { $setOnInsert: { uniqueId: receiverId } },
-//         { upsert: true, new: true }
-//       ),
-//     ]);
-
-//     // Check if request already sent
-//     const alreadySent = senderDoc.sentRequests.some(
-//       (id) => id.toString() === receiverId.toString()
-//     );
-//     if (alreadySent) {
-//       return res.status(400).json({ message: "Friend request already sent" });
-//     }
-
-//     // Add receiver to sender's sentRequests and sender to receiver's receivedRequests
-//     senderDoc.sentRequests.push(receiverId);
-//     receiverDoc.receivedRequests.push(senderId);
-
-//     await Promise.all([senderDoc.save(), receiverDoc.save()]);
-
-//     return res.status(200).json({ message: "Friend request sent!" });
-//   } catch (error) {
-//     console.error("Send Friend Request Error:", error);
-//     return res.status(500).json({ message: "Internal Server Error" });
-//   }
-// };
-
-// Get friend request info for a user (received, sent, connections)
 
 export const sendFriendRequest = async (req, res) => {
   console.log("first");
