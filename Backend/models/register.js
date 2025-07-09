@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const registerSchema = new mongoose.Schema({
   name: { type: String },
-  userName: { type: String, default: "" },
+  userName: { type: String, unique: true, sparse: true },
   email: { type: String, required: true },
   password: { type: String },
   oauthProvider: { type: String, default: null },
