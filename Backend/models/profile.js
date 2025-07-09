@@ -12,7 +12,7 @@ const profileSchema = new mongoose.Schema({
   phone: { type: String, default: "" },
   gender: { type: String, default: "" },
   dob: { type: String, default: "" },
-  Address: { type: String, default: "" },
+  address: { type: String, default: "" },
   state: { type: String, default: "" },
   city: { type: String, default: "" },
   bio: { type: String, default: "" },

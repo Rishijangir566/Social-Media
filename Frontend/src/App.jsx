@@ -17,10 +17,7 @@ import Notifications from "./pages/Notifications";
 import MainLayout from "./pages/MainLaout";
 import HomePage from "./HomePage";
 import DisplayPosts from "./DisplayPosts";
-
-
-
-
+// import { EditorProvider } from "react-simple-wysiwyg";
 
 const router = createBrowserRouter([
   {
@@ -82,7 +79,7 @@ const router = createBrowserRouter([
         path: "message",
         element: <Message />,
       },
-        {
+      {
         path: "displayPosts",
         element: <DisplayPosts />,
       },
@@ -110,7 +107,9 @@ function App() {
   return (
     <AuthProvider>
       <UserProvider>
-        <RouterProvider router={router} />
+        {/* <EditorProvider> */}
+          <RouterProvider router={router} />
+        {/* </EditorProvider> */}
       </UserProvider>
     </AuthProvider>
   );

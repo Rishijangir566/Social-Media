@@ -138,7 +138,8 @@ function Profile() {
   };
 
   const handleSubmit = async (e) => {
-    console.log("first");
+    console.log(formData);
+    // console.log();
     e.preventDefault();
 
     if (!formData.profilePic && !userDetail?.profilePic) {
@@ -163,11 +164,11 @@ function Profile() {
       if (formData[key]) data.append(key, formData[key]);
     }
     data.append("firstTimeSignIn", true);
-
+    console.log(data);
     try {
       setIsLoading(true);
       const res = await instance.put("/user/profile", data);
-      // console.log(res);
+      console.log(res);
       if (res.data?.user?.firstTimeSignIn) {
         setFirstTimeSignIn(true);
       }
@@ -435,7 +436,6 @@ function Profile() {
             </div>
           </form>
         </div>
-        
       </div>
     </div>
   );

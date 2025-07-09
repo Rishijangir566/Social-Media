@@ -34,7 +34,6 @@ function uploadToCloudinary(buffer, folder) {
   });
 }
 export async function handleRegister(req, res) {
-
   const { email, name, password } = req.body;
 
   const userExists = await Register.findOne({ email });
@@ -127,7 +126,7 @@ export async function handleLogin(req, res) {
         phone: "",
         gender: "",
         dob: "",
-        Address: "",
+        address: "",
         state: "",
         city: "",
         bio: "",
@@ -684,8 +683,6 @@ export const commentOnPost = async (req, res) => {
   }
 };
 
-
-
 export const sendFriendRequest = async (req, res) => {
   console.log("first");
   try {
@@ -778,11 +775,7 @@ export const getFriendRequestData = async (req, res) => {
     const userId = new mongoose.Types.ObjectId(req.params.userId);
     // ✅ cast to ObjectId
 
-    const userFriendData = await friendRequest
-       .findOne({ uniqueId: userId })
-      //  .populate("sentRequests", "userName email profile")
-  // .populate("receivedRequests", "userName email profilePic")
-  // .populate("connections", "userName email profilePic");
+    const userFriendData = await friendRequest.findOne({ uniqueId: userId });
 
     console.log(userFriendData);
 
