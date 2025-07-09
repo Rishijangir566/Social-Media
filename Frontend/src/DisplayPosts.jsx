@@ -87,7 +87,7 @@ const DisplayPosts = () => {
       </div>
 
       <div className="relative z-10 max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
+        
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="text-yellow-400 w-8 h-8" />

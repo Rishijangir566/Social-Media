@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  fetchProfileData,
   findAllPosts,
   findAllProfiles,
   findUserName,
@@ -18,6 +19,10 @@ router.get("/allposts", findAllPosts);
 
 router.post("/send_request/:receiverId", protect, sendFriendRequest);
 router.get("/request/:userId", protect, getFriendRequestData);
+
+router.get("/all-request/:userId", protect, fetchProfileData);
+
+
 
 router.get("/check-username", findUserName);
 router.get("/logout", handleLogout);

@@ -13,7 +13,7 @@ const Post = () => {
   const [profilepic, setProfilePic] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Mock user data for demo
+ 
 
   useEffect(() => {
     async function fetchUser() {

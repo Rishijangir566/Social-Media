@@ -777,7 +777,7 @@ export const getFriendRequestData = async (req, res) => {
 
     const userFriendData = await friendRequest.findOne({ uniqueId: userId });
 
-    console.log(userFriendData);
+    // console.log(userFriendData);
 
     if (!userFriendData) {
       return res.status(404).json({ message: "No friend data found" });
@@ -788,4 +788,22 @@ export const getFriendRequestData = async (req, res) => {
     console.error("Get Friend Data Error:", error);
     res.status(500).json({ message: "Server error" });
   }
+};
+
+export const fetchProfileData = async (req, res) => {
+  // console.log("first");
+  const ID = req.params.userId;
+  console.log(ID);
+  try {
+    const updatedProfile = await Profile.findOne({ uniqueId: ID });
+    const { email, name, userName, profilePic } = updatedProfile;
+    console.log(updatedProfile);
+
+    res.status(200).json({
+      email,
+      name,
+      userName,
+      profilePic,
+    });
+  } catch (error) {}
 };
