@@ -25,13 +25,20 @@ const HomePage = () => {
       const mainUser = userRes.data;
       setUserId(mainUser.uniqueId);
 
-      const allProfilesRes = await instance.get("/api/users/allprofiles");
-      const filteredProfiles = allProfilesRes.data.filter(
-        (profile) => profile.uniqueId !== mainUser.uniqueId
+      const friendRes = await instance.get(
+        `/api/users/request/${mainUser.uniqueId}`
       );
-      setProfiles(filteredProfiles);
+      setFriendData(friendRes.data);
 
-      await fetchFriendData(mainUser.uniqueId);
+      const allProfilesRes = await instance.get("/api/users/allprofiles");
+
+      const filteredProfiles = allProfilesRes.data.filter(
+        (profile) =>
+          profile.uniqueId !== mainUser.uniqueId &&
+          !friendRes.data.connections?.includes(profile.uniqueId)
+      );
+
+      setProfiles(filteredProfiles);
     } catch (err) {
       console.error(err);
       setError("Failed to fetch profiles.");
@@ -42,6 +49,7 @@ const HomePage = () => {
   async function fetchFriendData(userId) {
     try {
       const response = await instance.get(`/api/users/request/${userId}`);
+
       setFriendData(response.data);
     } catch (error) {
       console.error("Error fetching friend data:", error);

@@ -8,6 +8,7 @@ import {
   getFriendRequestData,
   getMe,
   handleLogout,
+  rejectRequest,
   sendFriendRequest,
 } from "../controllers/authController.js";
 import { checkToken, protect } from "../middleware/authMiddleware.js";
@@ -23,6 +24,7 @@ router.get("/request/:userId", protect, getFriendRequestData);
 
 router.get("/all-request/:userId", protect, fetchProfileData);
 router.put("/accept/:requestId", protect, acceptRequest);
+router.put("/reject/:requestId", protect, rejectRequest);
 
 router.get("/check-username", findUserName);
 router.get("/logout", handleLogout);

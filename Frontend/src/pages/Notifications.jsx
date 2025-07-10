@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import instance from "../axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 
 function Notifications({ userData, availableUser, setUserData }) {
-  // const navigate = useNavigate();
-  const [senders, setSenders] = useState([]);
-  const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [friendRequest, setFriendRequest] = useState([]);
   const [error, setError] = useState("");
+  const [check, setCheck] = useState(false);
 
   useEffect(() => {
     fetchUserAndProfiles();
-  }, []);
+  }, [check]);
 
   async function fetchUserAndProfiles() {
     try {
@@ -57,17 +54,56 @@ function Notifications({ userData, availableUser, setUserData }) {
   async function acceptRequest(requestId) {
     console.log(userId);
     console.log(requestId);
+
     try {
       const response = await instance.put(`/api/users/accept/${requestId}`, {
         senderID: userId,
       });
 
-     
       if (response?.status === 200 && response?.data) {
         toast.success("Friend Request Accepted!", {
           position: "top-right",
-          autoClose: 1000,
+          autoClose: 2000,
         });
+        setCheck((prev) => !prev);
+        // Safe updates
+        try {
+          setUserData((prev) => ({
+            ...prev,
+            receivedRequest: prev.receivedRequest.filter(
+              (id) => id !== requestId
+            ),
+          }));
+          setSenders((prev) =>
+            prev.filter((sender) => sender.friendRequestId !== requestId)
+          );
+        } catch (stateUpdateError) {
+          console.error("State update error:", stateUpdateError);
+        }
+      } else {
+        toast.warn(`Unexpected response: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Accept error:", error);
+      toast.error("Error accepting request!");
+    }
+  }
+
+  async function rejectRequest(requestId) {
+    console.log(userId);
+    console.log(requestId);
+    try {
+      const response = await instance.put(`/api/users/reject/${requestId}`, {
+        senderID: userId,
+      });
+
+      if (response?.status === 200 && response?.data) {
+        toast.success("Friend Request Rejected!", {
+          position: "top-right",
+          autoClose: 2000,
+        });
+        setCheck((prev) => !prev);
+
         setUserData((prev) => ({
           ...prev,
           receivedRequest: prev.receivedRequest.filter(
@@ -77,42 +113,12 @@ function Notifications({ userData, availableUser, setUserData }) {
         setSenders((prev) =>
           prev.filter((sender) => sender.friendRequestId !== requestId)
         );
-        setTimeout(() => navigate("/"), 2000);
       } else {
         toast.warn(`Unexpected response: ${response.status}`);
       }
     } catch (error) {
-      toast.error("Error accepting request!");
-      console.error("Accept error:", error);
-    }
-  }
-
-  async function rejectRequest(requestId) {
-    console.log(requestId);
-    try {
-      // const response = await instance.put(`/api/users/reject/${requestId}`);
-      // console.log("hello");
-      // if (response?.status === 200 && response?.data) {
-      //   toast.success("Friend Request Rejected!", {
-      //     position: "top-right",
-      //     autoClose: 3000,
-      //   });
-      //   setUserData((prev) => ({
-      //     ...prev,
-      //     receivedRequest: prev.receivedRequest.filter(
-      //       (id) => id !== requestId
-      //     ),
-      //   }));
-      //   setSenders((prev) =>
-      //     prev.filter((sender) => sender.friendRequestId !== requestId)
-      //   );
-      //   setTimeout(() => navigate("/"), 2000);
-      // } else {
-      //   toast.warn(`Unexpected response: ${response.status}`);
-      // }
-    } catch (error) {
-      // toast.error("Failed to reject friend request!");
-      // console.error("Reject error:", error);
+      toast.error("Failed to reject friend request!");
+      console.error("Reject error:", error);
     }
   }
 
@@ -122,7 +128,7 @@ function Notifications({ userData, availableUser, setUserData }) {
       <h1 className="text-2xl font-bold mb-4">Connection Request</h1>
 
       <ul className="space-y-4 flex flex-wrap gap-4 mt-10">
-        {friendRequest.map((profile, index) => {
+        {friendRequest.map((profile) => {
           return (
             <div
               key={profile.uniqueId}

@@ -778,12 +778,6 @@ export const getFriendRequestData = async (req, res) => {
 
     const userFriendData = await friendRequest.findOne({ uniqueId: userId });
 
-    // console.log(userFriendData);
-
-    if (!userFriendData) {
-      return res.status(404).json({ message: "No friend data found" });
-    }
-
     res.status(200).json(userFriendData);
   } catch (error) {
     console.error("Get Friend Data Error:", error);
@@ -933,4 +927,8 @@ export const acceptRequest = async (req, res) => {
     // console.error(err);
     // res.status(500).json({ message: err.message });
   }
+};
+
+export const rejectRequest = (req, res) => {
+  console.log("first");
 };

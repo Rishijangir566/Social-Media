@@ -379,6 +379,7 @@ const DisplayPosts = () => {
         const connectionRes = await instance.get(
           `/api/users/request/${userId}`
         );
+        
         const connections = connectionRes?.data?.connections || [];
 
         await fetchAllPosts(connections);
