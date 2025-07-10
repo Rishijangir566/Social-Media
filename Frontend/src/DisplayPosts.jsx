@@ -375,10 +375,10 @@ const DisplayPosts = () => {
 
   // Fetch posts once user connections are available
   useEffect(() => {
-    if (currentUserID && userConnection.length > 0) {
+    if (currentUserID) {
       fetchAllPosts();
     }
-  }, [currentUserID, userConnection]);
+  }, [currentUserID]);
 
   async function findUserConnection(currentUserID) {
     try {
