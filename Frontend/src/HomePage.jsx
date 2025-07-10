@@ -14,11 +14,12 @@ const HomePage = () => {
   useEffect(() => {
     fetchUserAndProfiles();
   }, []);
+
   useEffect(() => {
     console.log("Friend Data:", friendData);
   }, [friendData]);
 
-  // Fetch current user and all profiles
+  
   async function fetchUserAndProfiles() {
     try {
       const userRes = await instance.get("/api/users/me");
@@ -35,7 +36,7 @@ const HomePage = () => {
       const filteredProfiles = allProfilesRes.data.filter(
         (profile) =>
           profile.uniqueId !== mainUser.uniqueId &&
-          !friendRes.data.connections?.includes(profile.uniqueId)
+          !friendRes?.data?.connections?.includes(profile.uniqueId)
       );
 
       setProfiles(filteredProfiles);
@@ -45,7 +46,7 @@ const HomePage = () => {
     }
   }
 
-  // Fetch sentRequests, receivedRequests, connections
+  
   async function fetchFriendData(userId) {
     try {
       const response = await instance.get(`/api/users/request/${userId}`);

@@ -16,6 +16,8 @@ import {
   X,
   Sparkles,
   LogOut,
+  Network,
+  Users,
 } from "lucide-react";
 
 const Navbar = () => {
@@ -154,17 +156,17 @@ const Navbar = () => {
               </Link>
 
               {/* Messages */}
-              <Link to="/app/message">
+              <Link to="/app/Home">
                 <button
                   className={`relative p-3 rounded-xl transition-all duration-300 group ${
-                    activeTab === "Messages"
+                    activeTab === "Network"
                       ? "bg-white/20 text-white shadow-lg"
                       : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
-                  title="Messages"
-                  onClick={() => setActiveTab("Messages")}
+                  title="Users"
+                  onClick={() => setActiveTab("Network")}
                 >
-                  <MessageCircle className="h-6 w-6" />
+                  <Users className="h-6 w-6" />
                   {activeTab === "Messages" && (
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
                   )}

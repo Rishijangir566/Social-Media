@@ -3,7 +3,7 @@ import instance from "../axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import { Sparkles } from "lucide-react";
 
-function Notifications({ userData, availableUser, setUserData }) {
+function Notifications() {
   const [userId, setUserId] = useState(null);
   const [friendRequest, setFriendRequest] = useState([]);
   const [error, setError] = useState("");
@@ -66,20 +66,6 @@ function Notifications({ userData, availableUser, setUserData }) {
           autoClose: 2000,
         });
         setCheck((prev) => !prev);
-        // Safe updates
-        try {
-          setUserData((prev) => ({
-            ...prev,
-            receivedRequest: prev.receivedRequest.filter(
-              (id) => id !== requestId
-            ),
-          }));
-          setSenders((prev) =>
-            prev.filter((sender) => sender.friendRequestId !== requestId)
-          );
-        } catch (stateUpdateError) {
-          console.error("State update error:", stateUpdateError);
-        }
       } else {
         toast.warn(`Unexpected response: ${response.status}`);
       }
@@ -103,16 +89,6 @@ function Notifications({ userData, availableUser, setUserData }) {
           autoClose: 2000,
         });
         setCheck((prev) => !prev);
-
-        setUserData((prev) => ({
-          ...prev,
-          receivedRequest: prev.receivedRequest.filter(
-            (id) => id !== requestId
-          ),
-        }));
-        setSenders((prev) =>
-          prev.filter((sender) => sender.friendRequestId !== requestId)
-        );
       } else {
         toast.warn(`Unexpected response: ${response.status}`);
       }

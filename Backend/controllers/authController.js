@@ -924,11 +924,110 @@ export const acceptRequest = async (req, res) => {
       .status(200)
       .json({ message: "Connection request accepted successfully" });
   } catch (err) {
-    // console.error(err);
-    // res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
 
-export const rejectRequest = (req, res) => {
+export const rejectRequest = async (req, res) => {
+  const requestId = req.params.requestId; // Receiver's ID
+  const { senderID } = req.body; // Sender's ID
+  console.log(requestId);
+  console.log(senderID);
+
+  try {
+    const senderObjectId = new mongoose.Types.ObjectId(senderID);
+    const receiverObjectId = new mongoose.Types.ObjectId(requestId);
+
+    const senderUserDetail = await friendRequest.findOne({
+      uniqueId: senderObjectId,
+    });
+
+    const receiverUserDetail = await friendRequest.findOne({
+      uniqueId: receiverObjectId,
+    });
+
+    if (!receiverUserDetail) {
+      return res.status(404).json({ message: "Receiver user not found" });
+    }
+
+    if (!senderUserDetail) {
+      return res.status(404).json({ message: "Sender user not found" });
+    }
+    senderUserDetail.sentRequests = senderUserDetail.sentRequests.filter(
+      (id) => !id.equals(receiverObjectId)
+    );
+    senderUserDetail.receivedRequests =
+      senderUserDetail.receivedRequests.filter(
+        (id) => !id.equals(receiverObjectId)
+      );
+
+    // ✅ Remove sender from receiver's receivedRequests
+    receiverUserDetail.sentRequests = receiverUserDetail.sentRequests.filter(
+      (id) => !id.equals(senderObjectId)
+    );
+    receiverUserDetail.receivedRequests =
+      receiverUserDetail.receivedRequests.filter(
+        (id) => !id.equals(senderObjectId)
+      );
+    await senderUserDetail.save();
+    await receiverUserDetail.save();
+
+    res
+      .status(200)
+      .json({ message: "Connection request accepted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const removeConnection = async (req, res) => {
   console.log("first");
+  const requestId = req.params.requestId; // Receiver's ID
+  const { senderID } = req.body; // Sender's ID
+  console.log(requestId);
+  console.log(senderID);
+  try {
+    const senderObjectId = new mongoose.Types.ObjectId(senderID);
+    const receiverObjectId = new mongoose.Types.ObjectId(requestId);
+
+    const senderUserDetail = await friendRequest.findOne({
+      uniqueId: senderObjectId,
+    });
+
+    const receiverUserDetail = await friendRequest.findOne({
+      uniqueId: receiverObjectId,
+    });
+
+    if (!receiverUserDetail) {
+      return res.status(404).json({ message: "Receiver user not found" });
+    }
+
+    if (!senderUserDetail) {
+      return res.status(404).json({ message: "Sender user not found" });
+    }
+    senderUserDetail.sentRequests = senderUserDetail.sentRequests.filter(
+      (id) => !id.equals(receiverObjectId)
+    );
+    if (
+      senderUserDetail.connections.some((id) => id.equals(receiverObjectId))
+    ) {
+      senderUserDetail.connections.pull(receiverObjectId);
+    }
+    if (
+      receiverUserDetail.connections.some((id) => id.equals(senderObjectId))
+    ) {
+      receiverUserDetail.connections.pull(senderObjectId);
+    }
+    await senderUserDetail.save();
+    await receiverUserDetail.save();
+
+    res
+      .status(200)
+      .json({ message: "Connection request accepted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
+  }
 };
