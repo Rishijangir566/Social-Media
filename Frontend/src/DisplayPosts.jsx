@@ -346,7 +346,6 @@
 // export default DisplayPosts;
 
 import {
-  ThumbsUp,
   MessageCircle,
   Heart,
   Share2,
@@ -361,76 +360,59 @@ import instance from "./axiosConfig";
 
 const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
-  const [userConnection, setUserConnection] = useState([]);
   const [error, setError] = useState("");
   const [currentUserID, setCurrentUserID] = useState(null);
   const [userName, setuserName] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAllComments, setShowAllComments] = useState({});
 
-  // Fetch user and their connections first
   useEffect(() => {
-    fetchUser();
+    const fetchUserAndConnections = async () => {
+      try {
+        setIsLoading(true);
+
+        const res = await instance.get("/api/users/me");
+        const userId = res.data.uniqueId;
+        setCurrentUserID(userId);
+        setuserName(res.data.userName);
+
+        const connectionRes = await instance.get(
+          `/api/users/request/${userId}`
+        );
+        const connections = connectionRes?.data?.connections || [];
+
+        await fetchAllPosts(connections);
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error loading user or posts:", err);
+        setError("Something went wrong while loading your feed.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserAndConnections();
   }, []);
 
-  // Fetch posts once user connections are available
-  useEffect(() => {
-    if (currentUserID) {
-      fetchAllPosts();
-    }
-  }, [currentUserID]);
-
-  async function findUserConnection(currentUserID) {
+  async function fetchAllPosts(connections) {
     try {
-      const response = await instance.get(
-        `/api/users/request/${currentUserID}`
-      );
-      const connections = response?.data?.connections || [];
-      setUserConnection(connections);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+      const allPostsRes = await instance.get("/api/users/allposts");
+      const posts = allPostsRes.data;
 
-  async function fetchUser() {
-    try {
-      setIsLoading(true);
-      const res = await instance.get("/api/users/me");
-      const userId = res.data.uniqueId;
-      setCurrentUserID(userId);
-      setuserName(res.data.userName);
-      await findUserConnection(userId); // wait for connections before loading posts
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Fetch user failed:", err);
-      setIsLoading(false);
-    }
-  }
-
-  async function fetchAllPosts() {
-    try {
-      setIsLoading(true);
-      const allProfilesRes = await instance.get("/api/users/allposts");
-      const posts = allProfilesRes.data;
-
-      // Sort posts: connections' posts first
       const sortedPosts = posts.sort((a, b) => {
-        const aIsConnection = userConnection.includes(a.userId);
-        const bIsConnection = userConnection.includes(b.userId);
+        const aIsConnection = connections.includes(a.uniqueId);
+
+        const bIsConnection = connections.includes(b.uniqueId);
 
         if (aIsConnection && !bIsConnection) return -1;
         if (!aIsConnection && bIsConnection) return 1;
 
-        // Otherwise, sort by date (latest first)
         return new Date(b.createdAt) - new Date(a.createdAt);
       });
 
       setPosts(sortedPosts);
-      setIsLoading(false);
     } catch (err) {
+      console.error("Fetch posts failed:", err);
       setError("Failed to fetch posts.");
-      console.error(err);
-      setIsLoading(false);
     }
   }
 
@@ -621,7 +603,7 @@ const DisplayPosts = () => {
                     </div>
                   </div>
 
-                  {/* Comments Preview */}
+                  {/* Comments */}
                   {item.comments && item.comments.length > 0 && (
                     <div className="px-6 pb-6">
                       <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
@@ -657,7 +639,6 @@ const DisplayPosts = () => {
                           ))}
                         </div>
 
-                        {/* Toggle Button */}
                         {item.comments.length > 2 && (
                           <button
                             onClick={() =>
