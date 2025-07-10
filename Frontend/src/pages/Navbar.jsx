@@ -106,7 +106,7 @@ const Navbar = () => {
                     : "text-white/80 hover:text-white hover:bg-white/10"
                 }`}
                 title="Home"
-                onClick={() => navigate("/app/Home")}
+                onClick={() => navigate("/app/displayPosts")}
               >
                 <Home className="h-6 w-6" />
                 {activeTab === "Home" && (
@@ -187,7 +187,6 @@ const Navbar = () => {
               >
                 <LuLogOut className="h-6 w-6" />
                 <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1  bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                       
               </button>
             </div>
 

@@ -7,6 +7,7 @@ import {
    PlusSquare,
   User,
   Settings,
+  Network,
 } from "lucide-react";
 import { GoFileMedia } from "react-icons/go";
 
@@ -47,22 +48,22 @@ const LeftSideBar = () => {
 
         <nav className="flex flex-col gap-5 text-lg font-medium">
           <Link
-            to="/app/message"
+            to="/app/network"
             className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
-              location.pathname === "/app/message"
+              location.pathname === "/app/network"
                 ? "bg-white/20 text-white font-semibold shadow-lg"
                 : "text-white/80 hover:text-white hover:bg-white/10 backdrop-blur-md"
             }`}
           >
-            {location.pathname === "/app/message" && (
+            {location.pathname === "/app/network" && (
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <MessageCircle
+            <Network
               size={20}
               className="group-hover:rotate-12 transition-transform duration-300"
             />
-            <span>Message</span>
+            <span>My Network</span>
           </Link>
 
           <Link
@@ -103,7 +104,7 @@ const LeftSideBar = () => {
           </Link>
 
           <Link
-            to="/app/connection"
+            to="/app/Home"
             className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
               location.pathname === "/app/connection"
                 ? "bg-white/20 text-white font-semibold shadow-lg"

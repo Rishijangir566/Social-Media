@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  acceptRequest,
   fetchProfileData,
   findAllPosts,
   findAllProfiles,
@@ -21,8 +22,7 @@ router.post("/send_request/:receiverId", protect, sendFriendRequest);
 router.get("/request/:userId", protect, getFriendRequestData);
 
 router.get("/all-request/:userId", protect, fetchProfileData);
-
-
+router.put("/accept/:requestId", protect, acceptRequest);
 
 router.get("/check-username", findUserName);
 router.get("/logout", handleLogout);

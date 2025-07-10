@@ -6,7 +6,7 @@ import { FaLinkedin } from "react-icons/fa6";
 import { ImGithub } from "react-icons/im";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
- import instance from "./axiosConfig";
+import instance from "./axiosConfig";
 
 function Login() {
   const navigate = useNavigate();
@@ -33,7 +33,7 @@ function Login() {
       if (res.status === 201) {
         if (res.data?.user?.firstTimeSignIn === true) {
           setUser(true);
-          navigate("/app/Home");
+          navigate("/app/displayPosts");
         } else {
           setTimeout(() => {
             navigate("/profile");
@@ -252,8 +252,6 @@ function Login() {
         <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full opacity-20 blur-xl animate-pulse"></div>
         <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full opacity-20 blur-xl animate-pulse animation-delay-2000"></div>
       </div>
-
-   
     </div>
   );
 }

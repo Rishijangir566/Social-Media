@@ -10,7 +10,7 @@ const userPostSchema = new mongoose.Schema(
     content: {
       type: String,
       required: true,
-    }, 
+    },
     postImage: {
       type: String,
     },
@@ -40,6 +40,7 @@ const userPostSchema = new mongoose.Schema(
           ref: "Register",
         },
         text: String,
+        userName: String,
         createdAt: { type: Date, default: Date.now },
       },
     ],

@@ -15,6 +15,7 @@ function Notifications({ userData, availableUser, setUserData }) {
   useEffect(() => {
     fetchUserAndProfiles();
   }, []);
+
   async function fetchUserAndProfiles() {
     try {
       const userRes = await instance.get("/api/users/me");
@@ -53,57 +54,67 @@ function Notifications({ userData, availableUser, setUserData }) {
     }
   }
 
-  console.log(friendRequest);
+  async function acceptRequest(requestId) {
+    console.log(userId);
+    console.log(requestId);
+    try {
+      const response = await instance.put(`/api/users/accept/${requestId}`, {
+        senderID: userId,
+      });
 
-  // async function acceptRequest(requestId) {
-  //   try {
-  //     const response = await instance.put(`/api/users/accept/${requestId}`);
-  //  console.log("hello3")
-  //     if (response?.status === 200 && response?.data) {
-  //       toast.success("Friend Request Accepted!", { position: "top-right", autoClose: 3000 });
+     
+      if (response?.status === 200 && response?.data) {
+        toast.success("Friend Request Accepted!", {
+          position: "top-right",
+          autoClose: 1000,
+        });
+        setUserData((prev) => ({
+          ...prev,
+          receivedRequest: prev.receivedRequest.filter(
+            (id) => id !== requestId
+          ),
+        }));
+        setSenders((prev) =>
+          prev.filter((sender) => sender.friendRequestId !== requestId)
+        );
+        setTimeout(() => navigate("/"), 2000);
+      } else {
+        toast.warn(`Unexpected response: ${response.status}`);
+      }
+    } catch (error) {
+      toast.error("Error accepting request!");
+      console.error("Accept error:", error);
+    }
+  }
 
-  //       setUserData((prev) => ({
-  //         ...prev,
-  //         receivedRequest: prev.receivedRequest.filter(id => id !== requestId),
-  //       }));
-
-  //       setSenders(prev => prev.filter(sender => sender.friendRequestId !== requestId));
-
-  //       setTimeout(() => navigate("/"), 2000);
-  //     } else {
-  //       toast.warn(`Unexpected response: ${response.status}`);
-  //     }
-
-  //   } catch (error) {
-  //     toast.error("Error accepting request!");
-  //     console.error("Accept error:", error);
-  //   }
-  // }
-
-  // async function rejectRequest(requestId) {
-  //   try {
-  //     const response = await instance.put(`/api/users/reject/${requestId}`);
-  //            console.log("hello")
-  //     if (response?.status === 200 && response?.data) {
-  //       toast.success("Friend Request Rejected!", { position: "top-right", autoClose: 3000 });
-
-  //       setUserData((prev) => ({
-  //         ...prev,
-  //         receivedRequest: prev.receivedRequest.filter(id => id !== requestId),
-  //       }));
-
-  //       setSenders(prev => prev.filter(sender => sender.friendRequestId !== requestId));
-
-  //       setTimeout(() => navigate("/"), 2000);
-  //     } else {
-  //       toast.warn(`Unexpected response: ${response.status}`);
-  //     }
-
-  //   } catch (error) {
-  //     toast.error("Failed to reject friend request!");
-  //     console.error("Reject error:", error);
-  //   }
-  // }
+  async function rejectRequest(requestId) {
+    console.log(requestId);
+    try {
+      // const response = await instance.put(`/api/users/reject/${requestId}`);
+      // console.log("hello");
+      // if (response?.status === 200 && response?.data) {
+      //   toast.success("Friend Request Rejected!", {
+      //     position: "top-right",
+      //     autoClose: 3000,
+      //   });
+      //   setUserData((prev) => ({
+      //     ...prev,
+      //     receivedRequest: prev.receivedRequest.filter(
+      //       (id) => id !== requestId
+      //     ),
+      //   }));
+      //   setSenders((prev) =>
+      //     prev.filter((sender) => sender.friendRequestId !== requestId)
+      //   );
+      //   setTimeout(() => navigate("/"), 2000);
+      // } else {
+      //   toast.warn(`Unexpected response: ${response.status}`);
+      // }
+    } catch (error) {
+      // toast.error("Failed to reject friend request!");
+      // console.error("Reject error:", error);
+    }
+  }
 
   return (
     <div className="pl-[5%] pt-10 w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 text-white mt-10">
@@ -112,12 +123,9 @@ function Notifications({ userData, availableUser, setUserData }) {
 
       <ul className="space-y-4 flex flex-wrap gap-4 mt-10">
         {friendRequest.map((profile, index) => {
-          const requestId = profile._id || profile.requestId; // adjust if your backend uses a different field
-          const profileId = profile.uniqueId;
-
           return (
             <div
-              key={index}
+              key={profile.uniqueId}
               className="w-[260px] h-[300px] rounded-xl shadow-md border border-gray-400 relative bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900"
             >
               <div className="h-[90px] rounded-t-xl relative">
@@ -139,13 +147,13 @@ function Notifications({ userData, availableUser, setUserData }) {
 
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                 <button
-                  onClick={() => acceptRequest(requestId)}
+                  onClick={() => acceptRequest(profile.uniqueId)}
                   className="text-[15px] border py-1.5 px-5 rounded-2xl cursor-pointer text-green-400 border-green-400 hover:bg-green-700 hover:text-white"
                 >
                   Accept
                 </button>
                 <button
-                  onClick={() => rejectRequest(requestId)}
+                  onClick={() => rejectRequest(profile.uniqueId)}
                   className="text-[15px] border py-1.5 px-5 rounded-2xl cursor-pointer text-red-400 border-red-400 hover:bg-red-700 hover:text-white"
                 >
                   Reject

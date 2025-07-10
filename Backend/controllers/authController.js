@@ -669,13 +669,14 @@ export const likePost = async (req, res) => {
 // COMMENT on a post
 export const commentOnPost = async (req, res) => {
   const { postId } = req.params;
-  const { userId, text } = req.body;
+  console.log(postId);
+  const { userId, text, userName } = req.body;
 
   try {
-    const post = await userPost.findById(postId);
+    const post = await userPost.findOne({ uniqueId: postId });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    post.comments.push({ userId, text, createdAt: new Date() });
+    post.comments.push({ userId, text, userName, createdAt: new Date() });
     await post.save();
     res.json(post);
   } catch (err) {
@@ -793,17 +794,143 @@ export const getFriendRequestData = async (req, res) => {
 export const fetchProfileData = async (req, res) => {
   // console.log("first");
   const ID = req.params.userId;
-  console.log(ID);
+  // console.log(ID);
   try {
     const updatedProfile = await Profile.findOne({ uniqueId: ID });
-    const { email, name, userName, profilePic } = updatedProfile;
-    console.log(updatedProfile);
+    const { email, name, userName, profilePic, uniqueId } = updatedProfile;
+    // console.log(updatedProfile);
 
     res.status(200).json({
       email,
       name,
       userName,
       profilePic,
+      uniqueId,
     });
   } catch (error) {}
+};
+
+// export const acceptRequest = async (req, res) => {
+//   const requestId = req.params.requestId; // Receiver's ID
+//   const { senderID } = req.body; // Sender's ID
+
+//   try {
+//     const senderUserDetail = await friendRequest.findOne({
+//       uniqueId: senderID,
+//     });
+//     const receiverUserDetail = await friendRequest.findOne({
+//       uniqueId: requestId,
+//     });
+
+//     if (!receiverUserDetail) {
+//       return res.status(404).json({ message: "Receiver user not found" });
+//     }
+
+//     if (!senderUserDetail) {
+//       return res.status(404).json({ message: "Sender user not found" });
+//     }
+
+//     // Remove requestId from sender's sentRequests
+//     senderUserDetail.sentRequests = senderUserDetail.sentRequests.filter(
+//       (id) => id.toString() !== requestId
+//     );
+
+//     // Remove senderID from receiver's receivedRequests
+//     receiverUserDetail.receivedRequests =
+//       receiverUserDetail.receivedRequests.filter(
+//         (id) => id.toString() !== senderID
+//       );
+//     // if (receiverUserDetail.receivedRequests.includes(senderID)) {
+//     //   receiverUserDetail.receivedRequests.pull(senderID);
+//     // }
+
+//     // Add each other to connections if not already there
+//     if (!senderUserDetail.connections.includes(requestId)) {
+//       senderUserDetail.connections.push(requestId);
+//     }
+
+//     if (!receiverUserDetail.connections.includes(senderID)) {
+//       receiverUserDetail.connections.push(senderID);
+//     }
+
+//     // Save both users
+//     await senderUserDetail.save();
+//     await receiverUserDetail.save();
+
+//     res
+//       .status(200)
+//       .json({ message: "Connection request accepted successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+export const acceptRequest = async (req, res) => {
+  const requestId = req.params.requestId; // Receiver's ID
+  const { senderID } = req.body; // Sender's ID
+  console.log(requestId);
+  console.log(senderID);
+  try {
+    const senderObjectId = new mongoose.Types.ObjectId(senderID);
+    const receiverObjectId = new mongoose.Types.ObjectId(requestId);
+
+    const senderUserDetail = await friendRequest.findOne({
+      uniqueId: senderObjectId,
+    });
+
+    const receiverUserDetail = await friendRequest.findOne({
+      uniqueId: receiverObjectId,
+    });
+
+    if (!receiverUserDetail) {
+      return res.status(404).json({ message: "Receiver user not found" });
+    }
+
+    if (!senderUserDetail) {
+      return res.status(404).json({ message: "Sender user not found" });
+    }
+
+    // ✅ Remove receiver from sender's sentRequests and receivedRequests
+    senderUserDetail.sentRequests = senderUserDetail.sentRequests.filter(
+      (id) => !id.equals(receiverObjectId)
+    );
+    senderUserDetail.receivedRequests =
+      senderUserDetail.receivedRequests.filter(
+        (id) => !id.equals(receiverObjectId)
+      );
+
+    // ✅ Remove sender from receiver's receivedRequests
+    receiverUserDetail.sentRequests = receiverUserDetail.sentRequests.filter(
+      (id) => !id.equals(senderObjectId)
+    );
+    receiverUserDetail.receivedRequests =
+      receiverUserDetail.receivedRequests.filter(
+        (id) => !id.equals(senderObjectId)
+      );
+
+    // ✅ Add each other to connections if not already there
+    if (
+      !senderUserDetail.connections.some((id) => id.equals(receiverObjectId))
+    ) {
+      senderUserDetail.connections.push(receiverObjectId);
+    }
+
+    if (
+      !receiverUserDetail.connections.some((id) => id.equals(senderObjectId))
+    ) {
+      receiverUserDetail.connections.push(senderObjectId);
+    }
+
+    // ✅ Save updates
+    await senderUserDetail.save();
+    await receiverUserDetail.save();
+
+    res
+      .status(200)
+      .json({ message: "Connection request accepted successfully" });
+  } catch (err) {
+    // console.error(err);
+    // res.status(500).json({ message: err.message });
+  }
 };

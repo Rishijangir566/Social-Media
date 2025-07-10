@@ -12,11 +12,12 @@ import AuthProvider from "./context/AuthContext";
 import Setting from "./pages/Setting";
 import Connection from "./pages/Connection";
 import Post from "./pages/Post";
-import Message from "./pages/Message";
+
 import Notifications from "./pages/Notifications";
 import MainLayout from "./pages/MainLaout";
 import HomePage from "./HomePage";
 import DisplayPosts from "./DisplayPosts";
+import MyNetwork from "./pages/MyNetwork";
 // import { EditorProvider } from "react-simple-wysiwyg";
 
 const router = createBrowserRouter([
@@ -76,8 +77,12 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "message",
-        element: <Message />,
+        path: "network",
+        element: (
+          <ProtectedRoute>
+            <MyNetwork />,
+          </ProtectedRoute>
+        ),
       },
       {
         path: "displayPosts",
@@ -108,7 +113,7 @@ function App() {
     <AuthProvider>
       <UserProvider>
         {/* <EditorProvider> */}
-          <RouterProvider router={router} />
+        <RouterProvider router={router} />
         {/* </EditorProvider> */}
       </UserProvider>
     </AuthProvider>
