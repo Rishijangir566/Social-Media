@@ -10,6 +10,7 @@ const HomePage = () => {
   const [userId, setUserId] = useState(null);
   const [friendData, setFriendData] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     fetchUserAndProfiles();
@@ -19,8 +20,8 @@ const HomePage = () => {
     console.log("Friend Data:", friendData);
   }, [friendData]);
 
-  
   async function fetchUserAndProfiles() {
+    setLoading(true);
     try {
       const userRes = await instance.get("/api/users/me");
       const mainUser = userRes.data;
@@ -43,22 +44,21 @@ const HomePage = () => {
     } catch (err) {
       console.error(err);
       setError("Failed to fetch profiles.");
+    } finally {
+      setLoading(false);
     }
   }
 
-  
   async function fetchFriendData(userId) {
     try {
       const response = await instance.get(`/api/users/request/${userId}`);
-
       setFriendData(response.data);
     } catch (error) {
       console.error("Error fetching friend data:", error);
     }
   }
 
-  // Send connection request
-  async function sendRequest(receiverId) {     
+  async function sendRequest(receiverId) {
     if (!receiverId) return;
 
     try {
@@ -76,17 +76,32 @@ const HomePage = () => {
     }
   }
 
-  // Check if request is already pending
   const isRequestPending = (receiverId) => {
     return friendData?.sentRequests?.includes(receiverId);
   };
+
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900">
+        <div className="flex flex-col items-center">
+          <div className="w-14 h-14 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-white text-lg font-medium">
+            Loading profiles...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (error) return <div>{error}</div>;
 
   return (
     <div className="pl-[5%] pt-10 w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 text-white mt-10">
       <ToastContainer />
-      <h1 className="text-3xl font-bold mb-4 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500  bg-clip-text text-transparent">All Profiles</h1>
+      <h1 className="text-3xl font-bold mb-4 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 bg-clip-text text-transparent">
+        All Profiles
+      </h1>
 
       <ul className="space-y-4 flex flex-wrap gap-4">
         {profiles.map((profile, index) => {
@@ -131,6 +146,7 @@ const HomePage = () => {
           );
         })}
       </ul>
+
       {profiles.length === 0 && !error && (
         <div className="text-center py-20 mt-20">
           <div className="mb-6">

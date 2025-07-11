@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import instance from "./axiosConfig";
+import EmojiPicker from "emoji-picker-react";
 
 const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -19,6 +20,10 @@ const DisplayPosts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showAllComments, setShowAllComments] = useState({});
   const [openShareMenuId, setOpenShareMenuId] = useState(null);
+
+  const [activeCommentPostId, setActiveCommentPostId] = useState(null);
+  const [commentText, setCommentText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -248,16 +253,18 @@ const DisplayPosts = () => {
                     </div>
                   )}
 
-                  {/* Actions */}
+                  {/* Action Buttons + Comment Input */}
                   <div className="px-6 py-4 border-t border-white/10">
-                    <div className="flex gap-4">
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap gap-4 items-center">
+                      {/* Like Button */}
                       <button
                         onClick={() => handleLike(item._id)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${
                           isLiked
                             ? "bg-red-500/20 text-red-400 border border-red-400/30"
                             : "bg-white/10 text-slate-300 border border-white/20"
-                        }`}
+                        } hover:scale-105`}
                       >
                         <Heart
                           size={18}
@@ -267,21 +274,28 @@ const DisplayPosts = () => {
                         {item.likes?.length || 0}
                       </button>
 
+                      {/* Comment Button */}
                       <button
                         className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${
                           hasCommented
                             ? "bg-blue-500/20 text-blue-400 border border-blue-400/30"
                             : "bg-white/10 text-slate-300 border border-white/20"
-                        }`}
+                        } hover:scale-105`}
                         onClick={() => {
-                          const text = prompt("Write a comment:");
-                          if (text) handleComment(item._id, text);
+                          if (activeCommentPostId === item._id) {
+                            setActiveCommentPostId(null);
+                          } else {
+                            setActiveCommentPostId(item._id);
+                            setCommentText("");
+                            setShowEmojiPicker(false);
+                          }
                         }}
                       >
                         <MessageCircle size={18} />
                         {item.comments?.length || 0}
                       </button>
 
+                      {/* Share Button */}
                       <div className="relative">
                         <button
                           onClick={() =>
@@ -289,14 +303,15 @@ const DisplayPosts = () => {
                               prev === item.uniqueId ? null : item.uniqueId
                             )
                           }
-                          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-slate-300 hover:bg-white/20 border border-white/20"
+                          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-slate-300 hover:bg-white/20 border border-white/20 hover:scale-105"
                         >
                           <Share2 size={18} />
                           Share
                         </button>
 
+                        {/* Share Menu */}
                         {openShareMenuId === item.uniqueId && (
-                          <div className="absolute z-20 top-1/3 left-full ml-3  -translate-y-1/2 w-40 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl overflow-hidden">
+                          <div className="absolute z-20 top-12 left-0 w-40 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl overflow-hidden">
                             {[
                               {
                                 label: "WhatsApp",
@@ -333,7 +348,6 @@ const DisplayPosts = () => {
                                 navigator.clipboard.writeText(
                                   `${window.location.origin}/app/displayPosts`
                                 );
-
                                 alert("Link copied to clipboard!");
                                 setOpenShareMenuId(null);
                               }}
@@ -345,6 +359,61 @@ const DisplayPosts = () => {
                         )}
                       </div>
                     </div>
+
+                    {/* Comment Input Box */}
+                    {activeCommentPostId === item._id && (
+                      <div className="mt-4 transition-all duration-300">
+                        <div className="relative">
+                          <textarea
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            placeholder="Write a comment..."
+                            rows={2}
+                            className="w-full px-4 py-3 rounded-xl border border-white/20 bg-white/5 text-white resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+                          />
+
+                          {/* Emoji Button */}
+                          <button
+                            type="button"
+                            onClick={() => setShowEmojiPicker((prev) => !prev)}
+                            className="absolute bottom-3 right-20 text-purple-300 hover:text-purple-200 cursor-pointer"
+                          >
+                            😊
+                          </button>
+
+                          {/* Send Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (commentText.trim()) {
+                                handleComment(item._id, commentText.trim());
+                                setCommentText("");
+                                setActiveCommentPostId(null);
+                                setShowEmojiPicker(false);
+                              }
+                            }}
+                            className="absolute bottom-3 right-3 bg-purple-500 hover:bg-purple-600 text-white text-sm px-3 py-1 rounded-xl cursor-pointer"
+                          >
+                            Send
+                          </button>
+
+                          {/* Emoji Picker */}
+                          {showEmojiPicker && (
+                            <div className="absolute z-50 bottom-16 right-3 cursor-pointer">
+                              <EmojiPicker
+                                onEmojiClick={(emojiData) =>
+                                  setCommentText(
+                                    (prev) => prev + emojiData.emoji
+                                  )
+                                }
+                                theme="dark"
+                                autoFocusSearch={false}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Comments */}
