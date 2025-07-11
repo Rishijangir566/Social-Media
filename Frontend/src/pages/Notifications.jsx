@@ -101,7 +101,7 @@ function Notifications() {
   return (
     <div className="pl-[5%] pt-10 w-full min-h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 text-white mt-10">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-4">Connection Request</h1>
+      <h1 className="text-3xl font-bold mb-4 bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500  bg-clip-text text-transparent">Notification</h1>
 
       <ul className="space-y-4 flex flex-wrap gap-4 mt-10">
         {friendRequest.map((profile) => {

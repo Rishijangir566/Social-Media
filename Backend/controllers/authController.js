@@ -108,6 +108,7 @@ export async function handleLogin(req, res) {
     console.log(req.body);
 
     const user = await Register.findOne({ email, oauthProvider: "local" });
+   
 
     if (!user || user.password !== String(password)) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -141,7 +142,7 @@ export async function handleLogin(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
 

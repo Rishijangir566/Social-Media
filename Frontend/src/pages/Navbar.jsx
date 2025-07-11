@@ -72,14 +72,14 @@ const Navbar = () => {
                   isSearchFocused ? "transform scale-105" : ""
                 }`}
               >
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                {/* <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Search
                     className={`h-5 w-5 transition-colors duration-300 ${
                       isSearchFocused ? "text-purple-500" : "text-gray-400"
                     }`}
                   />
-                </div>
-                <input
+                </div> */}
+                {/* <input
                   type="text"
                   placeholder="Search users, posts, hashtags..."
                   className={`w-full pl-12 pr-6 py-3 bg-white/10 backdrop-blur-md text-white placeholder-white/70 border border-white/20 rounded-2xl 
@@ -91,10 +91,10 @@ const Navbar = () => {
                     }`}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
-                />
-                {isSearchFocused && (
+                /> */}
+                {/* {isSearchFocused && (
                   <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-pink-500/20 to-violet-500/20 -z-10 blur animate-pulse"></div>
-                )}
+                )} */}
               </div>
             </div>
 

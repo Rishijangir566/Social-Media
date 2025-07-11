@@ -114,7 +114,8 @@ const Post = () => {
             {/* Content Input */}
             <div className="relative group">
               <textarea
-                className="w-full p-6 min-h-[130px] bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-2xl resize-none text-white placeholder-white/50 shadow-lg hover:shadow-xl hover:bg-white/15 focus:border-blue-400/50 focus:ring-4 focus:ring-blue-400/20 transition-all duration-300 group-focus-within:scale-[1.02]"
+              
+                className="w-full p-6 min-h-[130px]  bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-2xl resize-none text-white placeholder-white/50 shadow-lg hover:shadow-xl hover:bg-white/15 focus:border-blue-400/50 focus:ring-4 focus:ring-blue-400/20 transition-all duration-300 group-focus-within:scale-[1.02]"
                 placeholder="What's on your mind? Share something amazing..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import instance from "../axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import { Sparkles, MessageCircle, UserX, Network } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function MyNetwork() {
   const [userConnection, setUserConnection] = useState([]);
@@ -91,7 +92,7 @@ function MyNetwork() {
               <Network className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 My Network
               </h1>
               <p className="text-slate-400 mt-2">
@@ -123,7 +124,7 @@ function MyNetwork() {
                     {/* Avatar Section */}
                     <div className="flex justify-center mb-6">
                       <div className="relative">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 ring-opacity-50 p-1">
                           <div className="w-full h-full rounded-full overflow-hidden bg-white">
                             <img
                               src={profile.profilePic}
@@ -184,12 +185,11 @@ function MyNetwork() {
             and industry professionals.
           </p>
           <div className="mt-8 flex gap-4">
-            <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300">
-              Discover People
-            </button>
-            <button className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl text-white font-medium border border-white/20 hover:bg-white/20 transition-all duration-300">
-              Import Contacts
-            </button>
+            <Link to="/app/Home">
+              <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl text-white font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 cursor-pointer">
+                Discover People
+              </button>
+            </Link>
           </div>
         </div>
       )}

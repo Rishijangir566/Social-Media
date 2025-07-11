@@ -394,28 +394,48 @@ const DisplayPosts = () => {
     fetchUserAndConnections();
   }, []);
 
-  async function fetchAllPosts(connections) {
-    try {
-      const allPostsRes = await instance.get("/api/users/allposts");
-      const posts = allPostsRes.data;
+ async function fetchAllPosts(connections) {
+  try {
+    const allPostsRes = await instance.get("/api/users/allposts");
+    const posts = allPostsRes.data;
 
-      const sortedPosts = posts.sort((a, b) => {
-        const aIsConnection = connections.includes(a.uniqueId);
+    // Group posts by user
+    const postsByUser = {};
 
-        const bIsConnection = connections.includes(b.uniqueId);
+    for (const post of posts) {
+      const userId = post.uniqueId;
 
-        if (aIsConnection && !bIsConnection) return -1;
-        if (!aIsConnection && bIsConnection) return 1;
-
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-      setPosts(sortedPosts);
-    } catch (err) {
-      console.error("Fetch posts failed:", err);
-      setError("Failed to fetch posts.");
+      if (!postsByUser[userId] || new Date(post.createdAt) > new Date(postsByUser[userId].createdAt)) {
+        postsByUser[userId] = post; // Keep only the latest post per user
+      }
     }
+
+    // Separate into connections and non-connections
+    const friendLatestPosts = [];
+    const nonFriendPosts = [];
+
+    for (const userId in postsByUser) {
+      const post = postsByUser[userId];
+      if (connections.includes(userId)) {
+        friendLatestPosts.push(post);
+      } else {
+        nonFriendPosts.push(post);
+      }
+    }
+
+    // Sort both groups by date (latest first)
+    friendLatestPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    nonFriendPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    const sortedPosts = [...friendLatestPosts, ...nonFriendPosts];
+
+    setPosts(sortedPosts);
+  } catch (err) {
+    console.error("Fetch posts failed:", err);
+    setError("Failed to fetch posts.");
   }
+}
+
 
   const handleLike = async (postId) => {
     try {
@@ -531,7 +551,7 @@ const DisplayPosts = () => {
 
                   {/* Post Content */}
                   <div className="px-6 pb-4">
-                    <p className="text-slate-100 leading-relaxed text-lg font-medium">
+                    <p style={{whiteSpace:"pre-wrap"}} className="text-slate-100 leading-relaxed text-lg font-medium">
                       {item.content || "No content provided."}
                     </p>
                   </div>
