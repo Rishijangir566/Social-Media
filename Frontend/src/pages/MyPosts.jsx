@@ -11,6 +11,8 @@ import {
 import { useEffect, useState } from "react";
 import instance from "../axiosConfig";
 import EmojiPicker from "emoji-picker-react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -24,11 +26,13 @@ const MyPosts = () => {
   const [activeCommentPostId, setActiveCommentPostId] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [openOptionsPostId, setOpenOptionsPostId] = useState(null);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (!e.target.closest(".relative")) {
         setOpenShareMenuId(null);
+        setOpenOptionsPostId(null);
       }
     };
     document.addEventListener("click", handleClickOutside);
@@ -49,7 +53,7 @@ const MyPosts = () => {
 
         const response = await instance.get(`/api/users/myPosts/${userId}`);
         if (response?.data) {
-          const reversedPosts = [...response.data].reverse(); 
+          const reversedPosts = [...response.data].reverse();
           setPosts(reversedPosts);
         }
 
@@ -92,9 +96,37 @@ const MyPosts = () => {
       console.error("Comment failed", err);
     }
   };
+  const handleDeletePost = async (postId) => {
+    console.log(postId);
+    const confirm = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+    if (!confirm) return;
+
+    try {
+      const response = await instance.delete(
+        `/api/users/delete/post/${postId}`
+      );
+      if (response?.status === 200) {
+        toast.success("Post deleted!", {
+          position: "top-right",
+          autoClose: 700,
+        });
+
+        // Remove the deleted post from UI
+        setTimeout(() => {
+          setPosts((prev) => prev.filter((post) => post._id !== postId));
+        }, 1400);
+      }
+    } catch (error) {
+      console.error("Delete post failed:", error);
+      alert("Failed to delete post.");
+    }
+  };
 
   return (
     <div className="min-h-screen mt-10 bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 relative overflow-hidden">
+      <ToastContainer />
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -146,7 +178,6 @@ const MyPosts = () => {
                   key={index}
                   className="backdrop-blur-xl rounded-2xl border border-white/40 hover:border-white/50 transition-all duration-500 hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-500/20 group overflow-hidden"
                 >
-                
                   <div className="flex items-center justify-between p-6 pb-4">
                     <div className="flex items-center gap-4">
                       <img
@@ -170,9 +201,43 @@ const MyPosts = () => {
                         </p>
                       </div>
                     </div>
-                    <button className="p-2 hover:bg-white/10 rounded-full transition">
-                      <MoreHorizontal size={20} className="text-slate-400" />
-                    </button>
+
+                    <div className="relative">
+                      <button
+                        onClick={() =>
+                          setOpenOptionsPostId((prev) =>
+                            prev === item._id ? null : item._id
+                          )
+                        }
+                        className="p-2 hover:bg-white/10 rounded-full transition"
+                      >
+                        <MoreHorizontal size={20} className="text-slate-400" />
+                      </button>
+
+                      {openOptionsPostId === item._id && (
+                        <div className="absolute right-0 top-10 w-36 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl z-30 overflow-hidden">
+                          <button
+                            onClick={() => {
+                              setOpenOptionsPostId(null);
+                              // TODO: trigger edit modal or redirect to edit screen
+                              alert("Edit feature coming soon!");
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-white/10 transition font-bold"
+                          >
+                            Edit Post
+                          </button>
+                          <button
+                            onClick={() => {
+                              setOpenOptionsPostId(null);
+                              handleDeletePost(item._id); // You'll implement this function below
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition font-bold"
+                          >
+                            Delete Post
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Post Content */}

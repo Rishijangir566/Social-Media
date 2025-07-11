@@ -1,14 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import {
-  MessageCircle,
-  FileText,
-  Users,
-  Heart,
-   PlusSquare,
-  User,
-  Settings,
-  Network,
-} from "lucide-react";
+import { Users, Heart, PlusSquare, User, Network } from "lucide-react";
 import { GoFileMedia } from "react-icons/go";
 
 const LeftSideBar = () => {
@@ -78,10 +69,11 @@ const LeftSideBar = () => {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <PlusSquare className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300"   size={20}
-           />
-            
-        
+            <PlusSquare
+              className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300"
+              size={20}
+            />
+
             <span>Post</span>
           </Link>
           <Link

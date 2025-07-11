@@ -1,6 +1,7 @@
 import express from "express";
 import {
   acceptRequest,
+  deletePost,
   displayMyPosts,
   fetchProfileData,
   findAllPosts,
@@ -29,6 +30,7 @@ router.put("/accept/:requestId", protect, acceptRequest);
 router.put("/reject/:requestId", protect, rejectRequest);
 router.put("/remove/connection/:requestId", protect, removeConnection);
 router.get("/myPosts/:requestId", protect, displayMyPosts);
+router.delete("/delete/post/:postId", protect, deletePost);
 
 router.get("/check-username", findUserName);
 router.get("/logout", handleLogout);

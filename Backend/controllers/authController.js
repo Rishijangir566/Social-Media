@@ -1,7 +1,6 @@
 import Register from "../models/register.js";
 import Profile from "../models/profile.js";
 import userPost from "../models/post.js";
-import user from "../models/register.js";
 import friendRequest from "../models/connection.js";
 import mongoose from "mongoose";
 import axios from "axios";
@@ -988,5 +987,24 @@ export const displayMyPosts = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const postID = req.params.postId;
+
+    // Check if post exists
+    const post = await userPost.findById(postID);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    await userPost.findByIdAndDelete(postID);
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    res.status(500).json({ message: "Server error while deleting post" });
   }
 };
