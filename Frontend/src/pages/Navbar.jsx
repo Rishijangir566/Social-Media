@@ -60,9 +60,11 @@ const Navbar = () => {
               <div className="w-12 h-12 bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300 hover:scale-105 transform">
                 <Sparkles className="w-6 h-6 text-white animate-pulse" />
               </div>
+              <Link to={"/app/displayPosts"}>
               <span className="hidden md:block text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
                 SocialHub
               </span>
+              </Link>
             </div>
 
             {/* Desktop Search */}

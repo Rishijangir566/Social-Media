@@ -58,7 +58,7 @@ const HomePage = () => {
   }
 
   // Send connection request
-  async function sendRequest(receiverId) {
+  async function sendRequest(receiverId) {     
     if (!receiverId) return;
 
     try {

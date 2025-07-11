@@ -39,16 +39,16 @@ const DisplayPosts = () => {
 
         const res = await instance.get("/api/users/me");
         const userId = res.data.uniqueId;
-        setCurrentUserID(userId);
+        setCurrentUserID(userId); // Set user ID
         setuserName(res.data.userName);
 
         const connectionRes = await instance.get(
           `/api/users/request/${userId}`
         );
-
         const connections = connectionRes?.data?.connections || [];
 
-        await fetchAllPosts(connections);
+        // ✅ Pass userId into fetchAllPosts
+        await fetchAllPosts(connections, userId);
         setIsLoading(false);
       } catch (err) {
         console.error("Error loading user or posts:", err);
@@ -56,52 +56,42 @@ const DisplayPosts = () => {
         setIsLoading(false);
       }
     };
-
     fetchUserAndConnections();
   }, []);
 
-  async function fetchAllPosts(connections) {
+  async function fetchAllPosts(connections, currentUserId) {
     try {
       const allPostsRes = await instance.get("/api/users/allposts");
       const posts = allPostsRes.data;
 
-      // Group posts by user
-      const postsByUser = {};
+      const friendPosts = [];
+      const latestNonFriendPostsMap = {};
 
       for (const post of posts) {
         const userId = post.uniqueId;
 
-        if (
-          !postsByUser[userId] ||
-          new Date(post.createdAt) > new Date(postsByUser[userId].createdAt)
-        ) {
-          postsByUser[userId] = post; // Keep only the latest post per user
-        }
-      }
+        // ✅ Correct filtering — skip posts by current user
+        if (userId === currentUserId) continue;
 
-      // Separate into connections and non-connections
-      const friendLatestPosts = [];
-      const nonFriendPosts = [];
-
-      for (const userId in postsByUser) {
-        const post = postsByUser[userId];
         if (connections.includes(userId)) {
-          friendLatestPosts.push(post);
+          friendPosts.push(post);
         } else {
-          nonFriendPosts.push(post);
+          if (
+            !latestNonFriendPostsMap[userId] ||
+            new Date(post.createdAt) >
+              new Date(latestNonFriendPostsMap[userId].createdAt)
+          ) {
+            latestNonFriendPostsMap[userId] = post;
+          }
         }
       }
 
-      // Sort both groups by date (latest first)
-      friendLatestPosts.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-      nonFriendPosts.sort(
+      friendPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const nonFriendPosts = Object.values(latestNonFriendPostsMap).sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
 
-      const sortedPosts = [...friendLatestPosts, ...nonFriendPosts];
-
+      const sortedPosts = [...friendPosts, ...nonFriendPosts];
       setPosts(sortedPosts);
     } catch (err) {
       console.error("Fetch posts failed:", err);
@@ -110,13 +100,13 @@ const DisplayPosts = () => {
   }
 
   const handleLike = async (postId) => {
+    console.log(postId);
     try {
       const res = await instance.post(`/user/like/${postId}`, {
         userId: currentUserID,
       });
-
       setPosts((prev) =>
-        prev.map((p) => (p.uniqueId === res.data.uniqueId ? res.data : p))
+        prev.map((p) => (p._id === res.data._id ? res.data : p))
       );
     } catch (err) {
       console.error("Like failed", err);
@@ -132,7 +122,7 @@ const DisplayPosts = () => {
       });
 
       setPosts((prev) =>
-        prev.map((p) => (p.uniqueId === res.data.uniqueId ? res.data : p))
+        prev.map((p) => (p._id === res.data._id ? res.data : p))
       );
     } catch (err) {
       console.error("Comment failed", err);
@@ -262,7 +252,7 @@ const DisplayPosts = () => {
                   <div className="px-6 py-4 border-t border-white/10">
                     <div className="flex gap-4">
                       <button
-                        onClick={() => handleLike(item.uniqueId)}
+                        onClick={() => handleLike(item._id)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-full transition ${
                           isLiked
                             ? "bg-red-500/20 text-red-400 border border-red-400/30"
@@ -285,7 +275,7 @@ const DisplayPosts = () => {
                         }`}
                         onClick={() => {
                           const text = prompt("Write a comment:");
-                          if (text) handleComment(item.uniqueId, text);
+                          if (text) handleComment(item._id, text);
                         }}
                       >
                         <MessageCircle size={18} />

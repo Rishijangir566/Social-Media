@@ -108,7 +108,6 @@ export async function handleLogin(req, res) {
     console.log(req.body);
 
     const user = await Register.findOne({ email, oauthProvider: "local" });
-   
 
     if (!user || user.password !== String(password)) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -645,13 +644,14 @@ export function handleLogout(req, res) {
 
 export const likePost = async (req, res) => {
   const { postId } = req.params;
+  const { userId } = req.body;
   console.log(postId);
 
-  const { userId } = req.body;
   console.log(userId);
 
   try {
-    const post = await userPost.findOne({ uniqueId: postId });
+    const post = await userPost.findById(postId);
+    console.log(post);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (post.likes.includes(userId)) {
@@ -674,7 +674,7 @@ export const commentOnPost = async (req, res) => {
   const { userId, text, userName } = req.body;
 
   try {
-    const post = await userPost.findOne({ uniqueId: postId });
+    const post = await userPost.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     post.comments.push({ userId, text, userName, createdAt: new Date() });
