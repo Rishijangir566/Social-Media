@@ -1,6 +1,7 @@
 import express from "express";
 import {
   acceptRequest,
+  displayMyPosts,
   fetchProfileData,
   findAllPosts,
   findAllProfiles,
@@ -26,7 +27,8 @@ router.get("/all-request/:userId", protect, fetchProfileData);
 
 router.put("/accept/:requestId", protect, acceptRequest);
 router.put("/reject/:requestId", protect, rejectRequest);
-router.put("/remove/connection/:requestId",protect,removeConnection)
+router.put("/remove/connection/:requestId", protect, removeConnection);
+router.get("/myPosts/:requestId", protect, displayMyPosts);
 
 router.get("/check-username", findUserName);
 router.get("/logout", handleLogout);

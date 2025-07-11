@@ -14,7 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import instance from "./axiosConfig.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Profile() {
   const navigate = useNavigate();
@@ -261,6 +261,14 @@ function Profile() {
               <p className="mt-4 text-white/70 text-sm">
                 Click to upload your profile picture
               </p>
+              <Link to={"/app/my-posts"}>
+                <button
+                  type="button"
+                  className="mt-4 md:mt-3 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium shadow-md hover:scale-105 transition-transform duration-300 cursor-pointer"
+                >
+                  View My Posts
+                </button>
+              </Link>
             </div>
             {/* </div> */}
 

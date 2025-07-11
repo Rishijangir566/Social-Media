@@ -18,7 +18,7 @@ import MainLayout from "./pages/MainLaout";
 import HomePage from "./HomePage";
 import DisplayPosts from "./DisplayPosts";
 import MyNetwork from "./pages/MyNetwork";
-// import { EditorProvider } from "react-simple-wysiwyg";
+import MyPosts from "./pages/MyPosts";
 
 const router = createBrowserRouter([
   {
@@ -103,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "setting",
         element: <Setting />,
+      },
+      {
+        path: "my-posts",
+        element: <MyPosts />,
       },
     ],
   },

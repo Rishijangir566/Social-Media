@@ -805,62 +805,6 @@ export const fetchProfileData = async (req, res) => {
   } catch (error) {}
 };
 
-// export const acceptRequest = async (req, res) => {
-//   const requestId = req.params.requestId; // Receiver's ID
-//   const { senderID } = req.body; // Sender's ID
-
-//   try {
-//     const senderUserDetail = await friendRequest.findOne({
-//       uniqueId: senderID,
-//     });
-//     const receiverUserDetail = await friendRequest.findOne({
-//       uniqueId: requestId,
-//     });
-
-//     if (!receiverUserDetail) {
-//       return res.status(404).json({ message: "Receiver user not found" });
-//     }
-
-//     if (!senderUserDetail) {
-//       return res.status(404).json({ message: "Sender user not found" });
-//     }
-
-//     // Remove requestId from sender's sentRequests
-//     senderUserDetail.sentRequests = senderUserDetail.sentRequests.filter(
-//       (id) => id.toString() !== requestId
-//     );
-
-//     // Remove senderID from receiver's receivedRequests
-//     receiverUserDetail.receivedRequests =
-//       receiverUserDetail.receivedRequests.filter(
-//         (id) => id.toString() !== senderID
-//       );
-//     // if (receiverUserDetail.receivedRequests.includes(senderID)) {
-//     //   receiverUserDetail.receivedRequests.pull(senderID);
-//     // }
-
-//     // Add each other to connections if not already there
-//     if (!senderUserDetail.connections.includes(requestId)) {
-//       senderUserDetail.connections.push(requestId);
-//     }
-
-//     if (!receiverUserDetail.connections.includes(senderID)) {
-//       receiverUserDetail.connections.push(senderID);
-//     }
-
-//     // Save both users
-//     await senderUserDetail.save();
-//     await receiverUserDetail.save();
-
-//     res
-//       .status(200)
-//       .json({ message: "Connection request accepted successfully" });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 export const acceptRequest = async (req, res) => {
   const requestId = req.params.requestId; // Receiver's ID
   const { senderID } = req.body; // Sender's ID
@@ -1030,5 +974,19 @@ export const removeConnection = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
+  }
+};
+
+export const displayMyPosts = async (req, res) => {
+  const userID = req.params.requestId;
+  console.log(userID);
+
+  try {
+    const users = await userPost.find({ uniqueId: userID }).select("-password");
+    console.log(users);
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching users", error });
   }
 };

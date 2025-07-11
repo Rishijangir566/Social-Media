@@ -9,7 +9,7 @@ function MyNetwork() {
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState("");
   const [check, setCheck] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUserAndProfiles();
@@ -78,15 +78,15 @@ function MyNetwork() {
     }
   }
 
- 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900">
-        <div className="flex flex-col items-center">
-          <div className="w-14 h-14 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-white text-lg font-medium">
-            Loading your connections...
-          </p>
+        <div className="text-center py-20">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-purple-400/20 rounded-full mx-auto mb-6"></div>
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-16 border-4 border-transparent border-t-purple-400 rounded-full animate-spin"></div>
+          </div>
+          <p className="text-slate-300 text-lg">Loading amazing posts...</p>
         </div>
       </div>
     );
