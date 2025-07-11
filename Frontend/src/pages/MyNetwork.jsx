@@ -31,8 +31,9 @@ function MyNetwork() {
     try {
       const response = await instance.get(`/api/users/request/${userId}`);
       console.log(response);
-
-      fetchRequestDetail(response?.data?.connections);
+      if (response?.data?.connections) {
+        fetchRequestDetail(response?.data?.connections);
+      }
     } catch (error) {
       // console.log("Error fetching friend data:", error);
     }
@@ -107,7 +108,7 @@ function MyNetwork() {
       <div className="px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {userConnection.map((profile) => {
+            {userConnection?.map((profile) => {
               return (
                 <div
                   key={profile.uniqueId}

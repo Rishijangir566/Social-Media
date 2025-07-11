@@ -365,6 +365,19 @@ const DisplayPosts = () => {
   const [userName, setuserName] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAllComments, setShowAllComments] = useState({});
+  const [openShareMenuId, setOpenShareMenuId] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".relative")) {
+        setOpenShareMenuId(null);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchUserAndConnections = async () => {
@@ -379,7 +392,7 @@ const DisplayPosts = () => {
         const connectionRes = await instance.get(
           `/api/users/request/${userId}`
         );
-        
+
         const connections = connectionRes?.data?.connections || [];
 
         await fetchAllPosts(connections);
@@ -394,48 +407,54 @@ const DisplayPosts = () => {
     fetchUserAndConnections();
   }, []);
 
- async function fetchAllPosts(connections) {
-  try {
-    const allPostsRes = await instance.get("/api/users/allposts");
-    const posts = allPostsRes.data;
+  async function fetchAllPosts(connections) {
+    try {
+      const allPostsRes = await instance.get("/api/users/allposts");
+      const posts = allPostsRes.data;
 
-    // Group posts by user
-    const postsByUser = {};
+      // Group posts by user
+      const postsByUser = {};
 
-    for (const post of posts) {
-      const userId = post.uniqueId;
+      for (const post of posts) {
+        const userId = post.uniqueId;
 
-      if (!postsByUser[userId] || new Date(post.createdAt) > new Date(postsByUser[userId].createdAt)) {
-        postsByUser[userId] = post; // Keep only the latest post per user
+        if (
+          !postsByUser[userId] ||
+          new Date(post.createdAt) > new Date(postsByUser[userId].createdAt)
+        ) {
+          postsByUser[userId] = post; // Keep only the latest post per user
+        }
       }
-    }
 
-    // Separate into connections and non-connections
-    const friendLatestPosts = [];
-    const nonFriendPosts = [];
+      // Separate into connections and non-connections
+      const friendLatestPosts = [];
+      const nonFriendPosts = [];
 
-    for (const userId in postsByUser) {
-      const post = postsByUser[userId];
-      if (connections.includes(userId)) {
-        friendLatestPosts.push(post);
-      } else {
-        nonFriendPosts.push(post);
+      for (const userId in postsByUser) {
+        const post = postsByUser[userId];
+        if (connections.includes(userId)) {
+          friendLatestPosts.push(post);
+        } else {
+          nonFriendPosts.push(post);
+        }
       }
+
+      // Sort both groups by date (latest first)
+      friendLatestPosts.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      nonFriendPosts.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      const sortedPosts = [...friendLatestPosts, ...nonFriendPosts];
+
+      setPosts(sortedPosts);
+    } catch (err) {
+      console.error("Fetch posts failed:", err);
+      setError("Failed to fetch posts.");
     }
-
-    // Sort both groups by date (latest first)
-    friendLatestPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    nonFriendPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    const sortedPosts = [...friendLatestPosts, ...nonFriendPosts];
-
-    setPosts(sortedPosts);
-  } catch (err) {
-    console.error("Fetch posts failed:", err);
-    setError("Failed to fetch posts.");
   }
-}
-
 
   const handleLike = async (postId) => {
     try {
@@ -551,7 +570,10 @@ const DisplayPosts = () => {
 
                   {/* Post Content */}
                   <div className="px-6 pb-4">
-                    <p style={{whiteSpace:"pre-wrap"}} className="text-slate-100 leading-relaxed text-lg font-medium">
+                    <p
+                      style={{ whiteSpace: "pre-wrap" }}
+                      className="text-slate-100 leading-relaxed text-lg font-medium"
+                    >
                       {item.content || "No content provided."}
                     </p>
                   </div>
@@ -617,10 +639,68 @@ const DisplayPosts = () => {
                         {item.comments?.length || 0}
                       </button>
 
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-slate-300 hover:bg-white/20 border border-white/20">
-                        <Share2 size={18} />
-                        Share
-                      </button>
+                      <div className="relative">
+                        <button
+                          onClick={() =>
+                            setOpenShareMenuId((prev) =>
+                              prev === item.uniqueId ? null : item.uniqueId
+                            )
+                          }
+                          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-slate-300 hover:bg-white/20 border border-white/20"
+                        >
+                          <Share2 size={18} />
+                          Share
+                        </button>
+
+                        {openShareMenuId === item.uniqueId && (
+                          <div className="absolute z-20 top-1/3 left-full ml-3  -translate-y-1/2 w-40 bg-white/5 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl overflow-hidden">
+                            {[
+                              {
+                                label: "WhatsApp",
+                                url: `https://wa.me/?text=${encodeURIComponent(
+                                  `${window.location.origin}/post/${item.uniqueId}`
+                                )}`,
+                              },
+                              {
+                                label: "Telegram",
+                                url: `https://t.me/share/url?url=${encodeURIComponent(
+                                  `${window.location.origin}/post/${item.uniqueId}`
+                                )}`,
+                              },
+                              {
+                                label: "Twitter",
+                                url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                                  `${window.location.origin}/post/${item.uniqueId}`
+                                )}`,
+                              },
+                            ].map((option, idx) => (
+                              <a
+                                key={idx}
+                                href={option.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block px-4 py-2 text-sm text-slate-200 hover:bg-white/10 transition"
+                              >
+                                {option.label}
+                              </a>
+                            ))}
+
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  `${window.location.origin}/post/${item.uniqueId}`
+                                );
+
+                                alert("Link copied to clipboard!");
+                                setOpenShareMenuId(null);
+                              }}
+                              className="block w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-white/10 transition"
+                            >
+                              Copy Link
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
