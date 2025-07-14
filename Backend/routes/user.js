@@ -13,6 +13,7 @@ import {
   rejectRequest,
   removeConnection,
   sendFriendRequest,
+  getUserById
 } from "../controllers/authController.js";
 import { checkToken, protect } from "../middleware/authMiddleware.js";
 const router = express.Router();
@@ -22,6 +23,7 @@ router.get("/checkToken", checkToken);
 router.get("/allprofiles", findAllProfiles);
 router.get("/allposts", findAllPosts);
 
+router.get("/:userId",protect, getUserById); 
 router.post("/send_request/:receiverId", protect, sendFriendRequest);
 router.get("/request/:userId", protect, getFriendRequestData);
 router.get("/all-request/:userId", protect, fetchProfileData);

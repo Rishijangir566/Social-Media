@@ -1,10 +1,19 @@
 import express from "express";
-import { sendMessage, getMessages } from "../controllers/messagerequest.js";
-import { protect } from "../middleware/authMiddleware.js";
+import Message from "../models/Message.js";
 
 const router = express.Router();
 
-router.post("/", protect, sendMessage);
-router.get("/:withUserId", protect, getMessages);
+// Get chat history for a room
+router.get("/:roomId", async (req, res) => {
+  const { roomId } = req.params;
+
+  try {
+    const messages = await Message.find({ room: roomId }).sort({ createdAt: 1 });
+    res.json(messages);
+  } catch (err) {
+    console.error("❌ Error fetching messages:", err);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
+});
 
 export default router;

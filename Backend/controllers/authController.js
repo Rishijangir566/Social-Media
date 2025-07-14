@@ -140,7 +140,7 @@ export async function handleLogin(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
+        sameSite: "strict",
         maxAge: 2 * 60 * 60 * 1000,
       })
 
@@ -154,6 +154,19 @@ export async function handleLogin(req, res) {
     res.status(400).json({ message: "Login error" }, err);
   }
 }
+
+export const getUserById = async (req, res) => {
+  try {
+    const user = await Profile.findOne({ uniqueId: req.params.userId }).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 
 export async function updateProfile(req, res) {
   const userId = req.user._id;

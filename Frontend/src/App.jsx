@@ -19,6 +19,7 @@ import HomePage from "./HomePage";
 import DisplayPosts from "./DisplayPosts";
 import MyNetwork from "./pages/MyNetwork";
 import MyPosts from "./pages/MyPosts";
+import ChatRoom from "./pages/ChatRoom";
 
 const router = createBrowserRouter([
   {
@@ -107,6 +108,10 @@ const router = createBrowserRouter([
       {
         path: "my-posts",
         element: <MyPosts />,
+      },
+      {
+        path: "chat/:receiverId",
+        element: <ChatRoom />,
       },
     ],
   },
