@@ -2,13 +2,31 @@ import { useEffect, useState } from "react";
 import instance from "../axiosConfig";
 import { toast, ToastContainer } from "react-toastify";
 import { Sparkles, MessageCircle, UserX, Network } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function MyNetwork() {
   const [userConnection, setUserConnection] = useState([]);
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const startChat = async (profile) => {
+    try {
+      const meRes = await instance.get("/api/users/me");
+      const user1 = meRes.data.uniqueId;
+      const user2 = profile.uniqueId;
+      console.log(user1, user2);
+
+      const res = await instance.post("/messages", { user1, user2 });
+      console.log(res.data);
+      navigate(`/app/chat/${res.data.roomId}`, {
+        state: { roomId: res.data.roomId },
+      });
+    } catch (err) {
+      console.error("Error starting chat:", err);
+    }
+  };
 
   useEffect(() => {
     fetchUserAndProfiles();
@@ -141,12 +159,13 @@ function MyNetwork() {
             </div>
 
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-              <Link to={`/app/chat/${profile.uniqueId}`}>
-                <button className="text-[15px] border py-1.5 px-4 rounded-2xl cursor-pointer text-blue-400 border-blue-400 hover:bg-blue-700 hover:text-white flex items-center gap-1">
-                  <MessageCircle size={16} />
-                  Chat
-                </button>
-              </Link>
+              <button
+                onClick={() => startChat(profile)}
+                className="text-[15px] border py-1.5 px-4 rounded-2xl cursor-pointer text-blue-400 border-blue-400 hover:bg-blue-700 hover:text-white flex items-center gap-1"
+              >
+                <MessageCircle size={16} />
+                Chat
+              </button>
 
               <button
                 onClick={() => handleRemoveConnection(profile.uniqueId)}

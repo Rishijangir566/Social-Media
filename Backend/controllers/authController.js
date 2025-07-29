@@ -4,6 +4,7 @@ import userPost from "../models/post.js";
 import friendRequest from "../models/connection.js";
 import mongoose from "mongoose";
 import axios from "axios";
+import nodemailer from "nodemailer";
 
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
@@ -157,7 +158,9 @@ export async function handleLogin(req, res) {
 
 export const getUserById = async (req, res) => {
   try {
-    const user = await Profile.findOne({ uniqueId: req.params.userId }).select("-password");
+    const user = await Profile.findOne({ uniqueId: req.params.userId }).select(
+      "-password"
+    );
     if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
@@ -166,7 +169,6 @@ export const getUserById = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 export async function updateProfile(req, res) {
   const userId = req.user._id;
@@ -710,7 +712,7 @@ export const sendFriendRequest = async (req, res) => {
     }
 
     const receiverId = new mongoose.Types.ObjectId(receiverIdParam);
-
+    console.log(receiverId);
     if (senderId.equals(receiverId)) {
       return res
         .status(400)
@@ -722,6 +724,9 @@ export const sendFriendRequest = async (req, res) => {
       Profile.findOne({ uniqueId: senderId }),
       Profile.findOne({ uniqueId: receiverId }),
     ]);
+
+    // console.log('email',senderProfile)
+    // console.log(receiverProfile.email);
 
     if (!senderProfile || !receiverProfile) {
       return res.status(404).json({ message: "Profile not found" });
@@ -740,6 +745,41 @@ export const sendFriendRequest = async (req, res) => {
         { upsert: true, new: true }
       ),
     ]);
+
+    // send email
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.sendgrid.net",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "apikey", // this is always "apikey"
+        pass: process.env.SENDGRID_API_KEY, // store your key in .env
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.FROM_EMAIL, // ✅ must be verified with SendGrid
+      to: receiverProfile.email, // ✅ 
+      subject: "You've received a friend request!",
+      text: `Hello ${receiverProfile.name}, ${senderProfile.name} sent you a friend request.`,
+      html: `<p><strong>${senderProfile.name}</strong> has sent you a friend request.</p> <br>  
+      <a 
+      href="https://social-media-1-mfvc.onrender.com/app/notification"
+      style="
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+      ">
+      Accept
+    </a> `,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     // ✅ Prevent duplicate requests
     const alreadySent = senderDoc.sentRequests.some(

@@ -1,9 +1,37 @@
 import { Link, useLocation } from "react-router-dom";
 import { Users, Heart, PlusSquare, User, Network } from "lucide-react";
 import { GoFileMedia } from "react-icons/go";
+import { useEffect, useState } from "react";
+import instance from "../axiosConfig";
 
 const LeftSideBar = () => {
   const location = useLocation();
+  const [notification, setNotification] = useState([]);
+
+  useEffect(() => {
+    fetchUserAndProfiles();
+  }, []);
+
+  async function fetchUserAndProfiles() {
+    try {
+      const userRes = await instance.get("/api/users/me");
+      const mainUser = userRes.data;
+      await fetchFriendData(mainUser.uniqueId);
+    } catch (err) {
+      console.error(err);
+      // setError("Failed to fetch profiles.");
+    }
+  }
+
+  async function fetchFriendData(userId) {
+    try {
+      const response = await instance.get(`/api/users/request/${userId}`);
+      setNotification(response?.data?.receivedRequests);
+    } catch (error) {
+      console.error("Error fetching friend data:", error);
+    }
+  }
+  console.log(notification.length);
 
   return (
     <div className="w-[100%] h-screen bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 hidden md:block text-white p-6 shadow-2xl sticky top-0 z-50 backdrop-blur-xl bg-opacity-80  overflow-hidden">
@@ -12,7 +40,7 @@ const LeftSideBar = () => {
         <div className="absolute -top-4 -left-4 w-8 h-8 bg-white/10 rounded-full animate-pulse"></div>
         <div
           className="absolute top-8 left-1/4 w-3 h-3 bg-white/20 rounded-full animate-bounce delay-100"
-          style={{ animationDelay: "100ms" }}
+          style={{animationDelay: "100ms" }}
         ></div>
         <div
           className="absolute top-4 right-1/3 w-2 h-2 bg-white/15 rounded-full animate-ping delay-300"
@@ -52,6 +80,7 @@ const LeftSideBar = () => {
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <Network
               size={20}
+              
               className="group-hover:rotate-12 transition-transform duration-300"
             />
             <span>My Network</span>
@@ -126,7 +155,18 @@ const LeftSideBar = () => {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/30 to-violet-500/30 -z-10 animate-pulse"></div>
             )}
             <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Heart className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+
+            {/* Heart icon with badge */}
+            <div className="relative">
+              <Heart className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+
+              {notification.length > 0 && (
+                <span className="absolute -top-3 -right-3 bg-red-700 text-white text-[10px] px-2 py-0.5 rounded-full shadow-sm">
+                  {notification.length}
+                </span>
+              )}
+            </div>
+
             <span>Notification</span>
           </Link>
 

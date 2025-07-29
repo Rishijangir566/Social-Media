@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
 import instance from "../axiosConfig";
@@ -7,15 +7,18 @@ import EmojiPicker from "emoji-picker-react";
 const socket = io(import.meta.env.VITE_BACKEND_URL, { withCredentials: true });
 
 function ChatRoom() {
-  const { receiverId } = useParams();
-  const [userId, setUserId] = useState(null);
+  const { roomId: roomIdFromParams } = useParams();
+  const location = useLocation();
+  const roomId = location.state?.roomId || roomIdFromParams;
+
+  const [mongoUserId, setMongoUserId] = useState(null);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [roomId, setRoomId] = useState("");
-  const [receiverProfile, setReceiverProfile] = useState({});
+  const [receiverProfile, setReceiverProfile] = useState([]);
   const [currentUserProfile, setCurrentUserProfile] = useState({});
   const bottomRef = useRef(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiRef = useRef(null); // 👈 Ref for emoji picker
 
   const handleEmojiClick = (emojiData) => {
     setMessage((prev) => prev + emojiData.emoji);
@@ -24,30 +27,23 @@ function ChatRoom() {
   useEffect(() => {
     async function setupChat() {
       try {
-        const res = await instance.get("/api/users/me");
-        const currentUser = res.data;
-        const currentUserId = currentUser.uniqueId;
-        setUserId(currentUserId);
+        const meRes = await instance.get("/api/users/me");
+        const currentUser = meRes.data;
+        setMongoUserId(currentUser.uniqueId);
         setCurrentUserProfile(currentUser);
 
-        const room =
-          currentUserId < receiverId
-            ? `${currentUserId}-${receiverId}`
-            : `${receiverId}-${currentUserId}`;
-        setRoomId(room);
+        if (!socket.connected) socket.connect();
+        socket.emit("join_room", roomId);
 
-        // Connect socket if not already connected
-        if (!socket.connected) {
-          socket.connect();
-        }
+        const roomRes = await instance.get(`/messages/${roomId}`);
+        const roomData = roomRes.data;
+        setMessages(roomData.messages);
 
-        socket.emit("join_room", room);
+        const [user1, user2] = roomData.participants;
+        const receiver = user1 === currentUser.uniqueId ? user2 : user1;
 
-        const receiverRes = await instance.get(`/api/users/${receiverId}`);
-        setReceiverProfile(receiverRes.data);
-
-        const messageRes = await instance.get(`/api/messages/${room}`);
-        setMessages(messageRes.data);
+        const receiverReq = await instance.get(`/api/users/${receiver}`);
+        setReceiverProfile(receiverReq.data);
       } catch (err) {
         console.error("Error during chat setup:", err);
       }
@@ -55,49 +51,59 @@ function ChatRoom() {
 
     setupChat();
 
-    socket.on("receive_message", (data) => {
-      console.log("📩 New message received:", data);
+    const receiveHandler = (data) => {
       setMessages((prev) => [...prev, data]);
-    });
-
-    return () => {
-      socket.off("receive_message");
     };
-  }, [receiverId]);
+
+    socket.on("receive_message", receiveHandler);
+    return () => {
+      socket.off("receive_message", receiveHandler);
+    };
+  }, [roomId]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (emojiRef.current && !emojiRef.current.contains(e.target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const sendMessage = () => {
     if (message.trim()) {
       const messageData = {
         room: roomId,
-        sender: userId,
+        sender: mongoUserId,
         text: message,
-        time: new Date().toLocaleTimeString(),
+        time: new Date(),
       };
       socket.emit("send_message", messageData);
-      setMessages((prev) => [...prev, messageData]);
       setMessage("");
     }
   };
 
   return (
     <div className="px-6 pt-20 text-white bg-gradient-to-br from-blue-900 via-blue-900 to-indigo-900 min-h-screen">
-      <div className="text-2xl text-white font-bold mb-4 pl-2 mr-20 ">
+      <div className="text-2xl font-bold mb-4 pl-2 mr-20">
         Chat with
         <img
           src={receiverProfile.profilePic}
           alt="avatar"
-          className="w-8 h-8 rounded-full mr-2 mx-4 inline-block "
+          className="w-8 h-8 rounded-full mr-2 mx-4 inline-block"
         />
-        <p className="inline-block">{receiverProfile.userName}</p>
+        <span>{receiverProfile.userName}</span>
       </div>
 
       <div className="bg-blue-950 p-4 rounded-md h-[400px] overflow-y-scroll mb-4">
         {messages.map((msg, idx) => {
-          const isMe = msg.sender === userId;
+          const isMe = msg.sender === mongoUserId;
           const user = isMe ? currentUserProfile : receiverProfile;
 
           return (
@@ -116,12 +122,17 @@ function ChatRoom() {
                 <p className="text-xs text-gray-300 mb-1">{user.userName}</p>
                 <div
                   className={`px-4 py-2 rounded-lg ${
-                    isMe ? "bg-blue-600 text-white" : "bg-gray-700 text-white"
+                    isMe ? "bg-blue-600" : "bg-gray-700"
                   }`}
                 >
                   {msg.text}
                 </div>
-                <p className="text-[10px] text-gray-400 mt-1">{msg.time}</p>
+                <p className="text-[10px] text-gray-400 mt-1">
+                  {new Date(msg.time).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
               {isMe && (
                 <img
@@ -163,7 +174,7 @@ function ChatRoom() {
         </div>
 
         {showEmojiPicker && (
-          <div className="absolute bottom-12 left-0 z-50">
+          <div ref={emojiRef} className="absolute bottom-12 left-0 z-50">
             <EmojiPicker
               onEmojiClick={handleEmojiClick}
               theme="dark"

@@ -49,6 +49,7 @@ function Notifications() {
       const responses = await Promise.all(promises);
       const requestData = responses.map((res) => res.data);
       const reverseRequestData = [...requestData].reverse();
+      console.log(reverseRequestData)
       setFriendRequest(reverseRequestData);
     } catch (error) {
       console.error("Error fetching request details:", error);
